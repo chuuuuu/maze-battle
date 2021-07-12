@@ -14,7 +14,6 @@ const io = new socketio.Server(server);
 app.get("/", (req, res) => {
   const id = uuid();
   res.sendFile(__dirname + "/index.html");
-  res.json(id);
 });
 
 // give user the maze json
