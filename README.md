@@ -4,6 +4,6 @@
 Follow the steps to start server
 ```
 cd server
-npm init
+npm install
 npm run watch
 ```
