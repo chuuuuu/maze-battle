@@ -44,13 +44,7 @@ declare module "express-session" {
 }
 
 // give user the room_id
-app.get("/", (req, res) => {
-  console.log(req.session.user);
-  if (req.session.user == undefined) {
-    res.json("you are not login");
-    return;
-  }
-
+app.get("/", (_, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
@@ -58,7 +52,7 @@ app.get("/", (req, res) => {
 app.get("/login", (req, res) => {
   console.log("login");
   req.session.user = 0;
-  res.send(true);
+  res.send("login successfully");
 });
 
 // logout
@@ -66,19 +60,19 @@ app.get("/logout", async (req, res) => {
   console.log("logout");
   res.clearCookie(COOKIE_NAME);
 
-  const is_logout = await new Promise((resolve) => {
+  const msg = await new Promise((resolve) => {
     req.session.destroy((err) => {
       if (err) {
         console.log(err);
-        resolve(false);
+        resolve("logout fail");
         return;
       }
 
-      resolve(true);
+      resolve("logout successfully");
     });
   });
 
-  res.send(is_logout);
+  res.send(msg);
 });
 
 // give user the maze json
@@ -89,7 +83,7 @@ app.get("/maze", (_, res) => {
 
 app.get("/maze_with_session", (req, res) => {
   if (req.session.user == undefined) {
-    res.json("you are not login");
+    res.send("you are not login");
     return;
   }
 
@@ -101,7 +95,7 @@ io.on("connection", (socket) => {
   console.log("a user connected");
   socket.on("echo", (msg) => {
     console.log("message: " + msg);
-    socket.emit("echo", msg);
+    socket.emit("echo", `echo from server: ${msg}`);
   });
 
   socket.on("disconnect", () => {
