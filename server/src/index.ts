@@ -2,12 +2,12 @@ import http from "http";
 import express from "express";
 import socketio from "socket.io";
 // import { v4 as uuid } from "uuid";
-import { MazeGenerator } from "./maze/MazeGenerator";
+import { MazeFactory } from "./maze/Maze";
 import cors from "cors";
 import session from "express-session";
 import { COOKIE_NAME, PROD } from "./config";
 
-const mazeGenerator = new MazeGenerator(10, 10);
+const mazeFactory = new MazeFactory(10, 10);
 
 const app = express();
 const server = new http.Server(app);
@@ -77,7 +77,7 @@ app.get("/logout", async (req, res) => {
 
 // give user the maze json
 app.get("/maze", (_, res) => {
-  const maze = mazeGenerator.createMaze();
+  const maze = mazeFactory.createMaze();
   res.json(maze);
 });
 
@@ -87,7 +87,7 @@ app.get("/maze_with_session", (req, res) => {
     return;
   }
 
-  const maze = mazeGenerator.createMaze();
+  const maze = mazeFactory.createMaze();
   res.json(maze);
 });
 

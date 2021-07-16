@@ -1,5 +1,6 @@
 import { Direction } from "../types";
-import { Wall } from "../types";
+
+export type Wall = boolean;
 
 export class Grid {
   walls: Wall[];

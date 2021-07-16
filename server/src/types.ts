@@ -4,6 +4,3 @@ export enum Direction {
   DOWN = 2,
   LEFT = 3
 }
-
-export type Seen = boolean[][];
-export type Wall = boolean;
