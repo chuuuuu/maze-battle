@@ -1,13 +1,6 @@
-import { Vector } from "src/maze/Vector";
+import { Vector } from "./Vector";
 
 export type Index = number;
-
-export class Block {
-  position: Vector;
-  constructor(position: Vector) {
-    this.position = position;
-  }
-}
 
 export class Node {
   index: Index;
@@ -15,6 +8,10 @@ export class Node {
   constructor(position: Vector, index: number) {
     this.index = index;
     this.position = position;
+  }
+
+  getRelativeNode(pos: Vector): Node{
+    return new Node(Vector.minus(this.position, pos), this.index);
   }
 }
 

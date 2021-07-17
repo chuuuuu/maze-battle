@@ -89,7 +89,7 @@ export class RegularMaze implements Maze {
     visibleNodeInfo: VisibleNodeInfo
   ): void {
     visibleNodeInfo.push([
-      current_node,
+      current_node.getRelativeNode(playerPosition),
       this.mazeMap.tunnelManager
         .getEdges(current_node)
         .map((node) => node.index),
@@ -124,12 +124,6 @@ export class MazeFactory {
     const start: Node = maze.mazeMap.nodes[0];
 
     this.build_road(maze.mazeMap, seen, start);
-
-    console.log(
-      JSON.stringify(
-        maze.mazeMap.tunnelManager.edges.map((edge) => Array.from(edge))
-      )
-    );
     return maze;
   }
 
