@@ -18,17 +18,17 @@ public class Grids implements Drawable{
     private int mazeSize;
     private Point position;
 
-    public Grids(int width, int height, JSONObject json) {
-        this.width = width;
-        this.height = height;
-        this.mazeSize = 80;
+    public Grids(JSONObject json) {
+        this.mazeSize = 20;
         this.position = new Point(10, 10);
         grids = new ArrayList<>();
         try {
             JSONArray jsonGrids = json.getJSONArray("grids");
+            height = jsonGrids.length();
             for (int i = 0; i < height; i++) {
                 grids.add(new ArrayList<>());
                 JSONArray row = jsonGrids.getJSONArray(i);
+                width = row.length();
                 for (int j = 0; j < width; j++){
                     JSONArray jsonGrid = row.getJSONObject(j).getJSONArray("walls");
                     grids.get(i).add(new Walls());

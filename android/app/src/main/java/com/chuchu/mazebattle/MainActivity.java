@@ -1,6 +1,8 @@
 package com.chuchu.mazebattle;
 
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -98,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 /**取得回傳*/
 
                 System.out.println("login");
-                
+
             }
         });
 
@@ -123,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 /**取得回傳*/
                 try {
                     //System.out.println(response.body().string());
-                    Grids grids = new Grids(10, 10, new JSONObject(response.body().string()));
+                    Grids grids = new Grids(new JSONObject(response.body().string()));
 
                     gameView.addElements(grids);
 
