@@ -34,8 +34,4 @@ export class Player implements PlayerInterface {
   constructor() {
     this.role = RoleFactory.getNoob();
   }
-
-  getvisibleScope(): VisibleScope{
-    return this.visibleScope;
-  }
 }

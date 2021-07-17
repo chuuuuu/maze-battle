@@ -31,7 +31,7 @@ class NoobGame implements Game {
   getGameInfo(player: Player): GameInfo {
     return {
       visibleGrids: this.maze.getVisibleGrids(player),
-      visibleScope: player.getvisibleScope(),
+      visibleScope: player.visibleScope,
       visibleItems: this.getVisibleItems(player),
       visiblePlayers: this.getVisiblePlayers(player),
     };

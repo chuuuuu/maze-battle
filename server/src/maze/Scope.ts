@@ -1,7 +1,14 @@
 import { Vector } from "src/utils/Vector";
 
+export type Rect = {
+  leftTopPoint: Vector;
+  rightDownPoint: Vector;
+};
+
 export interface VisibleScope {
   isInBoundary: (pos1: Vector, pos2: Vector) => boolean;
+  // gives you all possible boundary
+  getBoundary: (pos: Vector) => Rect;
 }
 
 export class RectScope implements VisibleScope {
@@ -18,6 +25,22 @@ export class RectScope implements VisibleScope {
 
     return true;
   }
+
+  getBoundary(pos: Vector): Rect {
+    const leftTopPoint = {
+      x: pos.x - this.width,
+      y: pos.y - this.height,
+    };
+    const rightDownPoint = {
+      x: pos.x + this.width,
+      y: pos.y + this.height,
+    };
+
+    return {
+      leftTopPoint,
+      rightDownPoint,
+    };
+  }
 }
 
 export class CircleScope implements VisibleScope {
@@ -33,4 +56,21 @@ export class CircleScope implements VisibleScope {
 
     return true;
   }
+
+  getBoundary(pos: Vector): Rect {
+    const leftTopPoint = {
+      x: pos.x - this.radius,
+      y: pos.y - this.radius,
+    };
+    const rightDownPoint = {
+      x: pos.x + this.radius,
+      y: pos.y + this.radius,
+    };
+
+    return {
+      leftTopPoint,
+      rightDownPoint,
+    };
+  }
+
 }
