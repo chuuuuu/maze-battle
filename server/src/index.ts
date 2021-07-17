@@ -2,12 +2,11 @@ import http from "http";
 import express from "express";
 import socketio from "socket.io";
 // import { v4 as uuid } from "uuid";
-import { MazeFactory } from "./maze/Maze";
+import { GameFactory } from "./maze/Game";
 import cors from "cors";
 import session from "express-session";
 import { COOKIE_NAME, PROD } from "./config";
-
-const mazeFactory = new MazeFactory(10, 10);
+import { Player } from "./maze/Player";
 
 const app = express();
 const server = new http.Server(app);
@@ -75,20 +74,14 @@ app.get("/logout", async (req, res) => {
   res.send(msg);
 });
 
-// give user the maze json
-app.get("/maze", (_, res) => {
-  const maze = mazeFactory.createMaze();
-  res.json(maze);
-});
-
-app.get("/maze_with_session", (req, res) => {
-  if (req.session.user == undefined) {
-    res.send("you are not login");
-    return;
-  }
-
-  const maze = mazeFactory.createMaze();
-  res.json(maze);
+app.get("/gameinfo", (_, res) => {
+  // game related test
+  const noobGame = GameFactory.getNoobGame();
+  const player = new Player(0, "chu", noobGame.maze.mazeMap.nodes[0]);
+  noobGame.register(player);
+  const gameInfo = noobGame.getGameInfo(player);
+  console.log(gameInfo);
+  res.send(gameInfo);
 });
 
 io.on("connection", (socket) => {

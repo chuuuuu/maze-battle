@@ -1,106 +1,126 @@
-import { getOppositeDirection } from "../utils/getOppositeDirection";
-import { Direction } from "../types";
-import { Vector } from "../utils/Vector";
-import { Grid } from "./Grid";
+import { Vector } from "./Vector";
+import { Node, Index, Graph, Block } from "./Graph";
+import { shuffle } from "../utils/shuffle";
 import { Player } from "./Player";
+import { VisibleScope } from "./Scope";
 
-export type Seen = boolean[][];
+export interface Maze {
+  mazeMap: Graph;
+  getVisibleBlocks(player: Player): Block[];
+}
 
-export class Maze {
-  grids: Grid[][];
+export type Seen = Set<Index>;
+
+export class RegularMaze implements Maze {
+  mazeMap: Graph;
+  width: number;
+  height: number;
   constructor(width: number, height: number) {
-    this.grids = [];
-    for (let i = 0; i < width; i++) {
-      this.grids.push([]);
-      for (let j = 0; j < height; j++) {
-        this.grids[i].push(new Grid());
+    this.mazeMap = new Graph();
+    this.width = width;
+    this.height = height;
+    const nodes: Node[][] = [];
+
+    for (let x = 0; x < width; x++) {
+      nodes.push([]);
+      for (let y = 0; y < height; y++) {
+        const node = this.mazeMap.createNode(new Vector(x + 0.5 * y, y));
+        nodes[x].push(node);
+      }
+    }
+
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < height; y++) {
+        const possibleNeighbour = [
+          [0, -1],
+          [1, -1],
+          [1, 0],
+          [0, 1],
+          [-1, 1],
+          [-1, 0],
+        ];
+        possibleNeighbour.forEach(([dx, dy]) => {
+          if (this.isValid(x + dx, y + dy)) {
+            this.mazeMap.tunnelManager.createEdge(
+              nodes[x][y],
+              nodes[x + dx][y + dy]
+            );
+            this.mazeMap.neighbourManager.createEdge(
+              nodes[x][y],
+              nodes[x + dx][y + dy]
+            );
+          }
+        });
       }
     }
   }
 
-  getGrid(pos: Vector): Grid {
-    return this.grids[pos.x][pos.y];
+  isValid(x: number, y: number): boolean {
+    if (x < 0) return false;
+    if (x >= this.width) return false;
+    if (y < 0) return false;
+    if (y >= this.height) return false;
+
+    return true;
   }
 
-  getVisibleGrids(player: Player): Grid[][]{
-    // todo
-    return [[]];
+  getVisibleBlocks(player: Player): Block[] {
+    const visibleScope = player.visibleScope;
+    const node = player.currentNode;
+    const seen: Seen = new Set<Index>();
+
+    const visibleBlocks: Block[] = [];
+    this.getVisibleBlocksDFS(seen, node, visibleScope, visibleBlocks);
+    return visibleBlocks;
+  }
+
+  getVisibleBlocksDFS(
+    seen: Seen,
+    current_node: Node,
+    visibleScope: VisibleScope,
+    visibleBlocks: Block[]
+  ): void {
+    visibleBlocks.push(current_node.block);
+    seen.add(current_node.index);
+
+    const nodes = this.mazeMap.neighbourManager.getEdges(current_node);
+    shuffle<Node>(nodes);
+    nodes.forEach((next_node) => {
+      if (seen.has(next_node.index)) {
+        return;
+      }
+
+      if(!visibleScope.isInBoundary(current_node.block.position, next_node.block.position)){
+        return;
+      }
+
+      this.getVisibleBlocksDFS(seen, next_node, visibleScope, visibleBlocks);
+    });
   }
 }
 
 export class MazeFactory {
-  width: number;
-  height: number;
+  static createRegularMaze(width: number, height: number): RegularMaze {
+    const seen: Seen = new Set<Index>();
+    const maze = new RegularMaze(width, height);
+    const start: Node = maze.mazeMap.nodes[0];
 
-  constructor(width: number, height: number) {
-    this.width = width;
-    this.height = height;
-  }
-
-  createMaze(): Maze {
-    const seen: Seen = [];
-    for (let i = 0; i < this.width; i++) {
-      seen.push([]);
-      for (let j = 0; j < this.height; j++) {
-        seen[i].push(false);
-      }
-    }
-
-    const maze = new Maze(this.width, this.height);
-    const start: Vector = { x: 0, y: 0 };
-
-    this.build_road(maze, seen, start);
+    this.build_road(maze.mazeMap, seen, start);
 
     return maze;
   }
 
-  build_road(maze: Maze, seen: Seen, pos: Vector): void {
-    seen[pos.x][pos.y] = true;
-    let directions: Direction[] = [
-      Direction.UP,
-      Direction.RIGHT,
-      Direction.DOWN,
-      Direction.LEFT,
-    ];
-
-    directions = this.shuffle(directions);
-    directions.forEach((direction) => {
-      const dirVec = Vector.getUnitVector(direction);
-      const nextPos = Vector.add(pos, dirVec);
-      if (!this.isInBoundary(nextPos)) {
-        return;
-      }
-      if (seen[nextPos.x][nextPos.y]) {
+  static build_road(mazeMap: Graph, seen: Seen, current_node: Node): void {
+    seen.add(current_node.index);
+    const nodes = mazeMap.tunnelManager.getEdges(current_node);
+    shuffle<Node>(nodes);
+    nodes.forEach((next_node) => {
+      if (seen.has(next_node.index)) {
         return;
       }
 
-      const grid = maze.getGrid(pos);
-      grid.setRoad(direction);
-
-      const nextGrid = maze.getGrid(nextPos);
-      const oppositeDirection = getOppositeDirection(direction);
-      nextGrid.setRoad(oppositeDirection);
-
-      this.build_road(maze, seen, nextPos);
+      mazeMap.tunnelManager.createEdge(current_node, next_node);
+      this.build_road(mazeMap, seen, next_node);
     });
   }
-
-  shuffle<T>(arr: T[]): T[] {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }
-
-  isInBoundary(pos: Vector): boolean {
-    if (pos.x < 0) return false;
-    if (pos.x >= this.width) return false;
-    if (pos.y < 0) return false;
-    if (pos.y >= this.height) return false;
-
-    return true;
-  }
 }
-
-export const getMaze = (width: number, height: number): Maze =>  new MazeFactory(width, height).createMaze();
