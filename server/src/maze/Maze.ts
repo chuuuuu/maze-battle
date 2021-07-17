@@ -11,12 +11,12 @@ export interface Maze {
 
 export type Seen = Set<Index>;
 
-export type Edge = Index[];
+export type Edges = Record<Index, Index[]>;
 
 export type VisibleNodeInfo = {
   currentNode: Node;
   neighbourNodes: Node[];
-  edges: Edge[];
+  edges: Edges;
 };
 
 export class RegularMaze implements Maze {
@@ -77,7 +77,7 @@ export class RegularMaze implements Maze {
     const visibleNodeInfo: VisibleNodeInfo = {
       currentNode: node,
       neighbourNodes: [],
-      edges: [],
+      edges: {},
     };
     this.getVisibleNodeInfoDFS(
       playerPosition,
@@ -99,11 +99,12 @@ export class RegularMaze implements Maze {
     visibleNodeInfo.neighbourNodes.push(
       current_node.getRelativeNode(playerPosition)
     );
-    visibleNodeInfo.edges.push(
-      this.mazeMap.tunnelManager
-        .getEdges(current_node)
-        .map((node) => node.index)
-    );
+    visibleNodeInfo.edges[current_node.index] = this.mazeMap.tunnelManager
+      .getEdges(current_node)
+      .map((node) => node.index);
+
+    console.log(visibleNodeInfo.edges);
+
     seen.add(current_node.index);
 
     const nodes = this.mazeMap.neighbourManager.getEdges(current_node);
