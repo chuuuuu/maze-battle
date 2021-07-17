@@ -80,7 +80,6 @@ app.get("/gameinfo", (_, res) => {
   const player = new Player(0, "chu", noobGame.maze.mazeMap.nodes[0]);
   noobGame.register(player);
   const gameInfo = noobGame.getGameInfo(player);
-  console.log(gameInfo);
   res.send(gameInfo);
 });
 

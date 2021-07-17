@@ -1,15 +1,19 @@
 import { Vector } from "./Vector";
-import { Node, Index, Graph, Block } from "./Graph";
+import { Node, Index, Graph } from "./Graph";
 import { shuffle } from "../utils/shuffle";
 import { Player } from "./Player";
 import { VisibleScope } from "./Scope";
 
 export interface Maze {
   mazeMap: Graph;
-  getVisibleBlocks(player: Player): Block[];
+  getVisibleNodeInfo(player: Player): VisibleNodeInfo;
 }
 
 export type Seen = Set<Index>;
+
+export type Edge = Index[];
+
+export type VisibleNodeInfo = [Node, Edge][];
 
 export class RegularMaze implements Maze {
   mazeMap: Graph;
@@ -41,10 +45,6 @@ export class RegularMaze implements Maze {
         ];
         possibleNeighbour.forEach(([dx, dy]) => {
           if (this.isValid(x + dx, y + dy)) {
-            this.mazeMap.tunnelManager.createEdge(
-              nodes[x][y],
-              nodes[x + dx][y + dy]
-            );
             this.mazeMap.neighbourManager.createEdge(
               nodes[x][y],
               nodes[x + dx][y + dy]
@@ -64,37 +64,55 @@ export class RegularMaze implements Maze {
     return true;
   }
 
-  getVisibleBlocks(player: Player): Block[] {
+  getVisibleNodeInfo(player: Player): VisibleNodeInfo {
     const visibleScope = player.visibleScope;
     const node = player.currentNode;
     const seen: Seen = new Set<Index>();
+    const playerPosition = player.position;
 
-    const visibleBlocks: Block[] = [];
-    this.getVisibleBlocksDFS(seen, node, visibleScope, visibleBlocks);
-    return visibleBlocks;
+    const visibleNodeInfo: VisibleNodeInfo = [];
+    this.getVisibleNodeInfoDFS(
+      playerPosition,
+      seen,
+      node,
+      visibleScope,
+      visibleNodeInfo
+    );
+    return visibleNodeInfo;
   }
 
-  getVisibleBlocksDFS(
+  getVisibleNodeInfoDFS(
+    playerPosition: Vector,
     seen: Seen,
     current_node: Node,
     visibleScope: VisibleScope,
-    visibleBlocks: Block[]
+    visibleNodeInfo: VisibleNodeInfo
   ): void {
-    visibleBlocks.push(current_node.block);
+    visibleNodeInfo.push([
+      current_node,
+      this.mazeMap.tunnelManager
+        .getEdges(current_node)
+        .map((node) => node.index),
+    ]);
     seen.add(current_node.index);
 
     const nodes = this.mazeMap.neighbourManager.getEdges(current_node);
-    shuffle<Node>(nodes);
     nodes.forEach((next_node) => {
       if (seen.has(next_node.index)) {
         return;
       }
 
-      if(!visibleScope.isInBoundary(current_node.block.position, next_node.block.position)){
+      if (!visibleScope.isInBoundary(playerPosition, next_node.position)) {
         return;
       }
 
-      this.getVisibleBlocksDFS(seen, next_node, visibleScope, visibleBlocks);
+      this.getVisibleNodeInfoDFS(
+        playerPosition,
+        seen,
+        next_node,
+        visibleScope,
+        visibleNodeInfo
+      );
     });
   }
 }
@@ -107,12 +125,17 @@ export class MazeFactory {
 
     this.build_road(maze.mazeMap, seen, start);
 
+    console.log(
+      JSON.stringify(
+        maze.mazeMap.tunnelManager.edges.map((edge) => Array.from(edge))
+      )
+    );
     return maze;
   }
 
   static build_road(mazeMap: Graph, seen: Seen, current_node: Node): void {
     seen.add(current_node.index);
-    const nodes = mazeMap.tunnelManager.getEdges(current_node);
+    const nodes = mazeMap.neighbourManager.getEdges(current_node);
     shuffle<Node>(nodes);
     nodes.forEach((next_node) => {
       if (seen.has(next_node.index)) {

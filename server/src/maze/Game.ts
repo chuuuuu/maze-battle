@@ -1,11 +1,10 @@
-import { Block } from "./Graph";
 import { Item } from "./Item";
-import { Maze, MazeFactory } from "./Maze";
+import { Maze, MazeFactory, VisibleNodeInfo } from "./Maze";
 import { Player } from "./Player";
 import { VisibleScope } from "./Scope";
 
 export type GameInfo = {
-  visibleBlocks: Block[];
+  visibleNodeInfo: VisibleNodeInfo;
   visibleScope: VisibleScope;
   visibleItems: Item[];
   visiblePlayers: Player[];
@@ -38,7 +37,7 @@ class NoobGame implements Game {
 
   getGameInfo(player: Player): GameInfo {
     return {
-      visibleBlocks: this.maze.getVisibleBlocks(player),
+      visibleNodeInfo: this.maze.getVisibleNodeInfo(player),
       visibleScope: player.visibleScope,
       visibleItems: this.getVisibleItems(player),
       visiblePlayers: this.getVisiblePlayers(player),

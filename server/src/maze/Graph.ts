@@ -11,10 +11,10 @@ export class Block {
 
 export class Node {
   index: Index;
-  block: Block;
+  position: Vector;
   constructor(position: Vector, index: number) {
     this.index = index;
-    this.block = new Block(position);
+    this.position = position;
   }
 }
 

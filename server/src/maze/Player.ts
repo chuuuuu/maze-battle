@@ -42,7 +42,7 @@ export class Player implements PlayerInterface {
     this.velocity = this.role.velocity;
     this.visibleScope = this.role.visibleScope;
     this.currentNode = currentNode;
-    this.position = currentNode.block.position;
+    this.position = currentNode.position;
     this.effects = [];  
   }
 }
