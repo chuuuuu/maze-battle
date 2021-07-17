@@ -14,17 +14,19 @@ it will give you a cookie
 GET /login
 ```
 
-it will delete you a cookie
+it will delete your cookie
 ```
 GET /logout
 ```
 
-you can get maze data without session
+it will give you gameinfo
 ```
-GET /maze
+GET /gameinfo
 ```
 
-you can only get maze data with session
 ```
-GET /maze_with_session
+x * * x x
+ * o * x x
+x * * x x
+ x x x x x
 ```
