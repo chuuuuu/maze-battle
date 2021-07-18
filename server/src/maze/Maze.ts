@@ -1,4 +1,4 @@
-import { Index, Graph, Node, Neighbours, Edges } from "./Graph";
+import { Index, Graph, Node, Neighbours, Tunnels } from "./Graph";
 import { shuffle } from "../utils/shuffle";
 import Sampler from "poisson-disk-sampling";
 import { Delaunay, Voronoi } from "d3-delaunay";
@@ -13,7 +13,7 @@ export type Seen = Set<Index>;
 export type MazeInfo = {
   nodes: Node[];
   neighbours: Neighbours;
-  edges: Edges;
+  tunnels: Tunnels;
   boundary: Boundary;
   delaunay: Delaunay<Delaunay.Point>;
   voronoi: Voronoi<Delaunay.Point>;
@@ -60,7 +60,7 @@ export class DelaunayMaze implements Maze {
     return {
       nodes: this.mazeMap.getNodes(),
       neighbours: this.mazeMap.getNeighbours(),
-      edges: this.mazeMap.getTunnels(),
+      tunnels: this.mazeMap.getTunnels(),
       boundary: this.boundary,
       delaunay: this.delaunay,
       voronoi: this.voronoi,

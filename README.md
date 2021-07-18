@@ -2,9 +2,12 @@
 ## Server
 ### scripts
 Follow the steps to start server
-```
+```shell
 cd server
 npm install
+# compile 
+npm run watch
+# execute
 npm run dev
 ```
 

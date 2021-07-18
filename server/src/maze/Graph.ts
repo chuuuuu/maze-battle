@@ -1,7 +1,7 @@
 import { Vector } from "./Vector";
 
 export type Index = number;
-export type Edges = Record<Index, Index[]>;
+export type Tunnels = Record<Index, Index[]>;
 export type Neighbours = Record<Index, Index[]>;
 
 export class Node {
@@ -87,7 +87,7 @@ export class Graph {
   getNeighbours(): Neighbours {
     return this.nodes.map((node) => this.neighbourManager.getEdges(node.index));
   }
-  getTunnels(): Edges {
+  getTunnels(): Tunnels {
     return this.nodes.map((node) => this.tunnelManager.getEdges(node.index));
   }
 }
