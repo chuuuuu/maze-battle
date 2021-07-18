@@ -24,7 +24,7 @@ GET /logout
 
 it will give you gameinfo
 ```
-GET /gameinfo
+GET /gameinfo/:nodeid
 ```
 
 ```
