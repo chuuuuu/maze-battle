@@ -12,10 +12,12 @@ export interface Maze {
 export type Seen = Set<Index>;
 
 export type Edges = Record<Index, Index[]>;
+export type Neighbours = Record<Index, Index[]>;
 
 export type VisibleNodeInfo = {
-  currentNode: Node;
-  neighbourNodes: Node[];
+  currentNode: Index;
+  nodes: Node[];
+  neighbourNodes: Neighbours;
   edges: Edges;
 };
 
@@ -75,8 +77,9 @@ export class RegularMaze implements Maze {
     const playerPosition = player.position;
 
     const visibleNodeInfo: VisibleNodeInfo = {
-      currentNode: node,
-      neighbourNodes: [],
+      currentNode: node.index,
+      nodes: [],
+      neighbourNodes: {},
       edges: {},
     };
     this.getVisibleNodeInfoDFS(
@@ -96,14 +99,16 @@ export class RegularMaze implements Maze {
     visibleScope: VisibleScope,
     visibleNodeInfo: VisibleNodeInfo
   ): void {
-    visibleNodeInfo.neighbourNodes.push(
-      current_node.getRelativeNode(playerPosition)
-    );
+    visibleNodeInfo.nodes.push(current_node.getRelativeNode(playerPosition));
+
+    visibleNodeInfo.neighbourNodes[current_node.index] =
+      this.mazeMap.neighbourManager
+        .getEdges(current_node)
+        .map((node) => node.index);
+
     visibleNodeInfo.edges[current_node.index] = this.mazeMap.tunnelManager
       .getEdges(current_node)
       .map((node) => node.index);
-
-    console.log(visibleNodeInfo.edges);
 
     seen.add(current_node.index);
 
@@ -116,7 +121,6 @@ export class RegularMaze implements Maze {
       if (!visibleScope.isInBoundary(playerPosition, next_node.position)) {
         return;
       }
-
       this.getVisibleNodeInfoDFS(
         playerPosition,
         seen,

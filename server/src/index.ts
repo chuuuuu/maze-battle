@@ -1,12 +1,15 @@
-import http from "http";
+import * as http from "http";
 import express from "express";
-import socketio from "socket.io";
+import * as socketio from "socket.io";
 // import { v4 as uuid } from "uuid";
 import { GameFactory } from "./maze/Game";
 import cors from "cors";
 import session from "express-session";
 import { COOKIE_NAME, PROD } from "./config";
 import { Player } from "./maze/Player";
+import { Delaunay } from "d3-delaunay";
+
+console.log(Delaunay);
 
 const app = express();
 const server = new http.Server(app);
@@ -74,10 +77,14 @@ app.get("/logout", async (req, res) => {
   res.send(msg);
 });
 
-app.get("/gameinfo", (_, res) => {
+app.get("/gameinfo/:pos", (req, res) => {
   // game related test
   const noobGame = GameFactory.getNoobGame();
-  const player = new Player(0, "chu", noobGame.maze.mazeMap.nodes[0]);
+  const player = new Player(
+    0,
+    "chu",
+    noobGame.maze.mazeMap.nodes[parseInt(req.params.pos)]
+  );
   noobGame.register(player);
   const gameInfo = noobGame.getGameInfo(player);
   res.send(gameInfo);

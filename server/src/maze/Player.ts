@@ -1,4 +1,4 @@
-import { Vector } from "src/maze/Vector";
+import { Vector } from "./Vector";
 import { Effect } from "./Effect";
 import { Node } from "./Graph";
 import { Role, RoleFactory } from "./Role";

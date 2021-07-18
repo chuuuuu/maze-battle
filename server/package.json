@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/express-session": "^1.17.4",
@@ -12,15 +13,16 @@
     "typescript": "^4.3.5"
   },
   "scripts": {
-    "build": "npx tsc --outDir build",
-    "watch": "npx tsc --outDir build -w",
-    "dev": "nodemon --exec ts-node src/index.ts",
-    "lint": "npx eslint .",
-    "tsc": "npx tsc --target ES6 *.ts"
+    "build": "npx tsc --target es6 --outDir build",
+    "watch": "npx tsc --target es6 --outDir build -w",
+    "dev": "nodemon --experimental-modules --es-module-specifier-resolution=node build/index.js",
+    "lint": "npx eslint ."
   },
   "dependencies": {
     "@types/cors": "^2.8.12",
+    "@types/d3-delaunay": "^6.0.0",
     "cors": "^2.8.5",
+    "d3-delaunay": "^6.0.2",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "socket.io": "^4.1.3",
