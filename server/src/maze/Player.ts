@@ -18,7 +18,7 @@ export type PlayerInfo = {
   role: Role;
 };
 
-interface PlayerInterface {
+export interface PlayerInterface {
   // user info
   userid: number;
   username: string;

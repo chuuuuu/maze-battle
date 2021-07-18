@@ -15,16 +15,16 @@ export type MazeInfo = {
   neighbours: Neighbours;
   tunnels: Tunnels;
   boundary: Boundary;
-  delaunay_points: number[] ,
-  delaunay_triangles: number[] ,
-  delaunay_halfedges: number[] ;
-  voronoi_circumcenters: number[] ;
-  voronoi_vectors: number[] ,
+  delaunay_points: number[];
+  delaunay_triangles: number[];
+  delaunay_halfedges: number[];
+  voronoi_circumcenters: number[];
+  voronoi_vectors: number[];
 };
 
 export type Boundary = [number, number];
 
-export class DelaunayMaze implements Maze {
+class DelaunayMaze implements Maze {
   mazeMap: Graph;
   boundary: Boundary;
   delaunay: Delaunay<Delaunay.Point>;
@@ -73,7 +73,6 @@ export class DelaunayMaze implements Maze {
     };
   }
 }
-
 
 export class MazeFactory {
   static createDelaunayMaze(width: number, height: number): DelaunayMaze {
