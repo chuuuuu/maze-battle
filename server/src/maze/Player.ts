@@ -2,7 +2,6 @@ import { Vector } from "./Vector";
 import { Effect } from "./Effect";
 import { Index } from "./Graph";
 import { Role, RoleFactory } from "./Role";
-import { VisibleScope } from "./Scope";
 
 export type PlayerInfo = {
   // user info
@@ -11,7 +10,6 @@ export type PlayerInfo = {
 
   // game info
   velocity: number;
-  visibleScope: VisibleScope;
   position: Vector;
   node: Index;
   effects: Effect[];
@@ -27,7 +25,6 @@ interface PlayerInterface {
 
   // game info
   velocity: number;
-  visibleScope: VisibleScope;
   position: Vector;
   node: Index;
   effects: Effect[];
@@ -45,7 +42,6 @@ export class Player implements PlayerInterface {
 
   // game info
   velocity: number;
-  visibleScope: VisibleScope;
   position: Vector;
   node: Index;
   effects: Effect[];
@@ -58,7 +54,6 @@ export class Player implements PlayerInterface {
 
     this.role = RoleFactory.getNoob();
     this.velocity = this.role.velocity;
-    this.visibleScope = this.role.visibleScope;
     this.node = node;
     this.position = position;
     this.effects = [];
@@ -72,7 +67,6 @@ export class Player implements PlayerInterface {
 
       // game info
       velocity: this.velocity,
-      visibleScope: this.visibleScope,
       position: this.position,
       node: this.node,
       effects: this.effects,

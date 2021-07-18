@@ -15,8 +15,11 @@ export type MazeInfo = {
   neighbours: Neighbours;
   tunnels: Tunnels;
   boundary: Boundary;
-  delaunay: Delaunay<Delaunay.Point>;
-  voronoi: Voronoi<Delaunay.Point>;
+  delaunay_points: number[] ,
+  delaunay_triangles: number[] ,
+  delaunay_halfedges: number[] ;
+  voronoi_circumcenters: number[] ;
+  voronoi_vectors: number[] ,
 };
 
 export type Boundary = [number, number];
@@ -62,11 +65,15 @@ export class DelaunayMaze implements Maze {
       neighbours: this.mazeMap.getNeighbours(),
       tunnels: this.mazeMap.getTunnels(),
       boundary: this.boundary,
-      delaunay: this.delaunay,
-      voronoi: this.voronoi,
+      delaunay_points: Array.from(this.delaunay.points),
+      delaunay_triangles: Array.from(this.delaunay.triangles),
+      delaunay_halfedges: Array.from(this.delaunay.halfedges),
+      voronoi_circumcenters: Array.from(this.voronoi.circumcenters),
+      voronoi_vectors: Array.from(this.voronoi.vectors),
     };
   }
 }
+
 
 export class MazeFactory {
   static createDelaunayMaze(width: number, height: number): DelaunayMaze {

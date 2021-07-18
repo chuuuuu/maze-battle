@@ -22,7 +22,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
