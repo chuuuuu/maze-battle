@@ -1,4 +1,3 @@
-import * as http from "http";
 import express from "express";
 import * as socketio from "socket.io";
 // import { v4 as uuid } from "uuid";
@@ -12,8 +11,6 @@ import path from "path";
 const __dirname = path.resolve();
 
 const app = express();
-const server = new http.Server(app);
-const io = new socketio.Server(server);
 
 // cors
 app.use(
@@ -88,6 +85,12 @@ app.get("/gameinfo/:nodeid", (req, res) => {
   res.send(gameInfo);
 });
 
+const server = app.listen(5000, () => {
+  console.log("listening on port 5000...");
+});
+
+const io = new socketio.Server(server);
+
 io.on("connection", (socket) => {
   console.log("a user connected");
   socket.on("echo", (msg) => {
@@ -98,8 +101,4 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
-});
-
-server.listen(5000, () => {
-  console.log("listening on port 5000...");
 });
