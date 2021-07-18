@@ -1,13 +1,10 @@
 import { Item } from "./Item";
-import { Maze, MazeFactory, VisibleNodeInfo } from "./Maze";
-import { Player } from "./Player";
-import { VisibleScope } from "./Scope";
-import { Vector } from "./Vector";
+import { Maze, MazeFactory, MazeInfo } from "./Maze";
+import { Player, PlayerInfo } from "./Player";
 
 export type GameInfo = {
-  position: Vector,
-  visibleNodeInfo: VisibleNodeInfo;
-  visibleScope: VisibleScope;
+  playerInfo: PlayerInfo;
+  mazeInfo: MazeInfo;
   visibleItems: Item[];
   visiblePlayers: Player[];
 };
@@ -28,7 +25,7 @@ class NoobGame implements Game {
   players: Player[];
   constructor(id: number) {
     this.id = id;
-    this.maze = MazeFactory.createRegularMaze(10, 10);
+    this.maze = MazeFactory.createDelaunayMaze(100, 100);
     this.items = [];
     this.players = [];
   }
@@ -39,9 +36,8 @@ class NoobGame implements Game {
 
   getGameInfo(player: Player): GameInfo {
     return {
-      position: player.position,
-      visibleNodeInfo: this.maze.getVisibleNodeInfo(player),
-      visibleScope: player.visibleScope,
+      playerInfo: player.getInfo(),
+      mazeInfo: this.maze.getInfo(),
       visibleItems: this.getVisibleItems(player),
       visiblePlayers: this.getVisiblePlayers(player),
     };

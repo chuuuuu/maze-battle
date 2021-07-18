@@ -7,9 +7,9 @@ import cors from "cors";
 import session from "express-session";
 import { COOKIE_NAME, PROD } from "./config";
 import { Player } from "./maze/Player";
-import { Delaunay } from "d3-delaunay";
-
-console.log(Delaunay);
+import { Node } from "./maze/Graph";
+import path from "path";
+const __dirname = path.resolve();
 
 const app = express();
 const server = new http.Server(app);
@@ -47,7 +47,7 @@ declare module "express-session" {
 
 // give user the room_id
 app.get("/", (_, res) => {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile(__dirname + "/src/index.html");
 });
 
 // login
@@ -77,14 +77,12 @@ app.get("/logout", async (req, res) => {
   res.send(msg);
 });
 
-app.get("/gameinfo/:pos", (req, res) => {
+app.get("/gameinfo/:nodeid", (req, res) => {
   // game related test
+  const nodeid = parseInt(req.params.nodeid);
   const noobGame = GameFactory.getNoobGame();
-  const player = new Player(
-    0,
-    "chu",
-    noobGame.maze.mazeMap.nodes[parseInt(req.params.pos)]
-  );
+  const node: Node = noobGame.maze.mazeMap.nodes[nodeid];
+  const player = new Player(0, "chu", nodeid, node.position);
   noobGame.register(player);
   const gameInfo = noobGame.getGameInfo(player);
   res.send(gameInfo);

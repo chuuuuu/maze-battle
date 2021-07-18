@@ -1,6 +1,8 @@
 import { Vector } from "./Vector";
 
 export type Index = number;
+export type Edges = Record<Index, Index[]>;
+export type Neighbours = Record<Index, Index[]>;
 
 export class Node {
   index: Index;
@@ -10,51 +12,50 @@ export class Node {
     this.position = position;
   }
 
-  getRelativeNode(pos: Vector): Node{
+  getRelativeNode(pos: Vector): Node {
     return new Node(Vector.minus(this.position, pos), this.index);
   }
 }
 
 class EdgeManager {
-  nodes: Node[]
   edges: Set<Index>[];
-  constructor(nodes: Node[]) {
-    this.nodes = nodes;
+  constructor() {
     this.edges = [];
   }
+
   createNode(): void {
     this.edges.push(new Set<Index>());
   }
 
-  createEdge(node1: Node, node2: Node): void {
-    this.edges[node1.index].add(node2.index);
-    this.edges[node2.index].add(node1.index);
+  createEdge(node1: Index, node2: Index): void {
+    this.edges[node1].add(node2);
+    this.edges[node2].add(node1);
   }
 
-  deleteEdge(node1: Node, node2: Node): void {
-    this.edges[node1.index].delete(node2.index);
-    this.edges[node2.index].delete(node1.index);
+  deleteEdge(node1: Index, node2: Index): void {
+    this.edges[node1].delete(node2);
+    this.edges[node2].delete(node1);
   }
 
-  isEdge(node1: Node, node2: Node): boolean {
-    return this.edges[node1.index].has(node2.index);
+  isEdge(node1: Index, node2: Index): boolean {
+    return this.edges[node1].has(node2);
   }
 
-  getEdges(node: Node): Array<Node> {
-    return Array.from(this.edges[node.index]).map(index=>this.nodes[index]);
+  getEdges(node: Index): Array<Index> {
+    return Array.from(this.edges[node]);
   }
 }
 
 export class Graph {
   nextIndex: number;
   nodes: Node[];
-  tunnelManager: EdgeManager;
-  neighbourManager: EdgeManager;
+  private tunnelManager: EdgeManager;
+  private neighbourManager: EdgeManager;
   constructor() {
     this.nextIndex = 0;
     this.nodes = [];
-    this.tunnelManager = new EdgeManager(this.nodes);
-    this.neighbourManager = new EdgeManager(this.nodes);
+    this.tunnelManager = new EdgeManager();
+    this.neighbourManager = new EdgeManager();
   }
 
   createNode(position: Vector): Node {
@@ -66,5 +67,27 @@ export class Graph {
     this.nextIndex++;
 
     return node;
+  }
+
+  createNeighbour(node1: Index, node2: Index): void {
+    this.neighbourManager.createEdge(node1, node2);
+  }
+
+  createTunnel(node1: Index, node2: Index): void {
+    this.tunnelManager.createEdge(node1, node2);
+  }
+
+  getNeighbour(node1: Index): Index[] {
+    return this.neighbourManager.getEdges(node1);
+  }
+
+  getNodes(): Node[] {
+    return this.nodes;
+  }
+  getNeighbours(): Neighbours {
+    return this.nodes.map((node) => this.neighbourManager.getEdges(node.index));
+  }
+  getTunnels(): Edges {
+    return this.nodes.map((node) => this.tunnelManager.getEdges(node.index));
   }
 }
