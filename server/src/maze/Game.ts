@@ -23,9 +23,9 @@ class NoobGame implements Game {
   maze: Maze;
   items: Item[];
   players: Player[];
-  constructor(id: number) {
+  constructor(id: number, width: number, height: number) {
     this.id = id;
-    this.maze = MazeFactory.createDelaunayMaze(100, 100);
+    this.maze = MazeFactory.createDelaunayMaze(width, height);
     this.items = [];
     this.players = [];
   }
@@ -58,8 +58,8 @@ class NoobGame implements Game {
 
 export class GameFactory {
   static nextId = 0;
-  static getNoobGame(): Game {
-    const game = new NoobGame(this.nextId);
+  static getNoobGame(width: number, height: number): Game {
+    const game = new NoobGame(this.nextId, width, height);
     this.nextId++;
     return game;
   }

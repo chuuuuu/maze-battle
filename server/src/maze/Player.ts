@@ -1,4 +1,4 @@
-import { Vector } from "./Vector";
+import { Vector } from "../utils/Vector";
 import { Effect } from "./Effect";
 import { Index } from "./Graph";
 import { Role, RoleFactory } from "./Role";

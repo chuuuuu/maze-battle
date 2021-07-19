@@ -74,10 +74,12 @@ app.get("/logout", async (req, res) => {
   res.send(msg);
 });
 
-app.get("/gameinfo/:nodeid", (req, res) => {
+app.get("/gameinfo/:nodeid/:width/:height", (req, res) => {
   // game related test
   const nodeid = parseInt(req.params.nodeid);
-  const noobGame = GameFactory.getNoobGame();
+  const width = parseInt(req.params.width);
+  const height = parseInt(req.params.height);
+  const noobGame = GameFactory.getNoobGame(width, height);
   const node: Node = noobGame.maze.mazeMap.nodes[nodeid];
   const player = new Player(0, "chu", nodeid, node.position);
   noobGame.register(player);

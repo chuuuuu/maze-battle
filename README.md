@@ -24,7 +24,7 @@ GET /logout
 
 it will give you gameinfo
 ```
-GET /gameinfo/:nodeid
+GET /gameinfo/:nodeid/:width/:height
 ```
 
 ```
