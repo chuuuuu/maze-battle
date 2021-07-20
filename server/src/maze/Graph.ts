@@ -1,7 +1,7 @@
 import { Delaunay } from "d3-delaunay";
-import { Vector } from "../utils/Vector";
-import { UnorderedTuple } from "../utils/UnorderedTuple";
-import { VectorMap } from "../utils/VectorMap";
+import { Vector, VectorKey } from "../utils/Vector";
+import { HashTable } from "../utils/HashTable";
+import { UnorderedPair, UnorderedPairKey } from "../utils/UnorderedPair";
 
 export type Index = number;
 export type Tunnels = Record<Index, Index[]>;
@@ -19,89 +19,105 @@ export class Graph {
   nodes: Node[];
   vertexs: Vertex[];
   edges: Edge[];
-  private vertexDict: VectorMap<Index>;
-  private edgeDict: VectorMap<Index>;
+  private vertexTable: HashTable<Vector, Index>;
+  private edgeTable: HashTable<UnorderedPair, Index>;
   private nodesToEdge: Record<Index, Record<Index, Index>>;
 
   constructor() {
     this.nodes = [];
     this.vertexs = [];
     this.edges = [];
-    this.vertexDict = new VectorMap<Index>();
-    this.edgeDict = new VectorMap<Index>();
+    this.vertexTable = new HashTable<Vector, Index>();
+    this.edgeTable = new HashTable<UnorderedPair, Index>();
     this.nodesToEdge = {};
   }
 
   createNode(position: Vector, polygon: Delaunay.Polygon): Node {
     // initialize
-    // this.nodes
+    // store all nodes
     const nodeid = this.nodes.length;
     const node: Node = { position, id: nodeid, edgeids: [] };
     this.nodes.push(node);
 
-    // initialize
-    // this.vertexToIndex
-    // this.vertexs
-    polygon.forEach((point) => {
-      const vertexPosition = new Vector(point[0], point[1]);
-      if (this.vertexDict.contain(vertexPosition)) {
-        return;
-      }
+    // insert vertex if never seen
+    // 0, 1, 2, 3, 0
+    const pointlen = polygon.length;
+    for (let i = 1; i < pointlen; i++) {
+      const point = polygon[i];
+      const vertexKey = VectorKey.fromPoint(point);
+      if (this.vertexTable.exist(vertexKey)) continue;
 
       const vertexid = this.vertexs.length;
-      this.vertexDict.insert(vertexPosition, vertexid);
-      this.vertexs.push({ position: vertexPosition, id: vertexid });
-    });
+      this.vertexTable.insert({ key: vertexKey, value: vertexid });
+      this.vertexs.push({ position: vertexKey.toVector(), id: vertexid });
+    }
 
-    // initialize
-    // this.edgeToIndex
-    // this.edges
-    let prevVertexid: number | null = null;
-    // 0, 1, 2, 3, 0
-    polygon.forEach((point) => {
-      const vertexPosition = new Vector(point[0], point[1]);
-      let vertexid: number | null = this.vertexDict.find(vertexPosition);
-      [prevVertexid, vertexid] = [vertexid, prevVertexid];
-      if (prevVertexid === null || vertexid === null) {
-        return;
+    // store edge to this.edges if never seen
+    let prevVertexid = this.vertexTable.find(VectorKey.fromPoint(polygon[0]));
+    for (let i = 1; i < pointlen; i++) {
+      // get vertexid
+      const point = polygon[i];
+      const vertexKey = VectorKey.fromPoint(point);
+      const vertexid: Index | null = this.vertexTable.find(vertexKey);
+      if (prevVertexid === null) {
+        console.error("prevVertexid should not be null");
+        continue;
       }
-      const edgeEncode = UnorderedTuple.getVector(prevVertexid, vertexid);
-      if (this.edgeDict.contain(edgeEncode)) {
-        return;
+      if (vertexid === null) {
+        console.error("vertexid should not be null");
+        continue;
+      }
+
+      // insert edge if never seen
+      const edgeKey = new UnorderedPairKey(prevVertexid, vertexid);
+      if (this.edgeTable.exist(edgeKey)) {
+        prevVertexid = vertexid;
+        continue;
       }
 
       const edgeid = this.edges.length;
-      this.edgeDict.insert(edgeEncode, edgeid);
+      this.edgeTable.insert({ key: edgeKey, value: edgeid });
       this.edges.push({
         id: edgeid,
         vertexid: [prevVertexid, vertexid],
         nodeids: [],
         isTunnel: false,
       });
-    });
+
+      prevVertexid = vertexid;
+    }
 
     // initialize
-    // this.nodes[?].edges
-    // this.edges[?].nodes
-    prevVertexid = null;
-    polygon.forEach((point) => {
-      const vertexPosition = new Vector(point[0], point[1]);
-      let vertexid: number | null = this.vertexDict.find(vertexPosition);
-      [prevVertexid, vertexid] = [vertexid, prevVertexid];
-      if (prevVertexid === null || vertexid === null) {
-        return;
+    // store edgeids to this.nodes[?].edgeids
+    // store nodeids to this.edges[?].nodeids
+    prevVertexid = this.vertexTable.find(VectorKey.fromPoint(polygon[0]));
+    for (let i = 1; i < pointlen; i++) {
+      const point = polygon[i];
+      const vertexKey = VectorKey.fromPoint(point);
+      const vertexid: Index | null = this.vertexTable.find(vertexKey);
+      if (vertexid === null) {
+        console.error("vertexid should not be null");
+        continue;
       }
-      const edgeid = this.edgeDict.find(
-        UnorderedTuple.getVector(prevVertexid, vertexid)
-      );
+      if (prevVertexid === null) {
+        console.error("prevVertexid should not be null");
+        continue;
+      }
+
+      const edgeKey = new UnorderedPairKey(prevVertexid, vertexid);
+
+      const edgeid = this.edgeTable.find(edgeKey);
       if (edgeid === null) {
-        return;
+        console.error("edgeid should not be null");
+        continue;
       }
       const edge = this.edges[edgeid];
       const node = this.nodes[nodeid];
       edge.nodeids.push(nodeid);
       node.edgeids.push(edgeid);
-    });
+
+      prevVertexid = vertexid;
+    }
 
     return node;
   }
@@ -111,12 +127,17 @@ export class Graph {
     for (let i = 0; i < edgelen; i++) {
       const edge = this.edges[i];
       const nodeids = edge.nodeids;
-      if (nodeids.length == 2) {
-        this.nodesToEdge[nodeids[0]] = {};
-        this.nodesToEdge[nodeids[0]][nodeids[1]] = edge.id;
-        this.nodesToEdge[nodeids[1]] = {};
-        this.nodesToEdge[nodeids[1]][nodeids[0]] = edge.id;
+      if (nodeids.length !== 2) {
+        continue;
       }
+      if (this.nodesToEdge[nodeids[0]] === undefined) {
+        this.nodesToEdge[nodeids[0]] = {};
+      }
+      this.nodesToEdge[nodeids[0]][nodeids[1]] = edge.id;
+      if (this.nodesToEdge[nodeids[1]] === undefined) {
+        this.nodesToEdge[nodeids[1]] = {};
+      }
+      this.nodesToEdge[nodeids[1]][nodeids[0]] = edge.id;
     }
   }
 
@@ -126,27 +147,8 @@ export class Graph {
     );
   }
 
-  // createNeighbour(nodeid1: Index, nodeid2: Index): void {
-  //   this.neighbourManager.createEdge(nodeid1, nodeid2);
-  // }
-
   setTunnel(nodeid1: Index, nodeid2: Index): void {
     const edgeid = this.nodesToEdge[nodeid1][nodeid2];
     this.edges[edgeid].isTunnel = true;
   }
-
-  // getNeighbour(nodeid1: Index): Index[] {
-  //   return this.neighbourManager.getEdges(nodeid1);
-  // }
-
-  // getNodes(): Node[] {
-  //   return this.nodes;
-  // }
-
-  // getNeighbours(): Neighbours {
-  //   return this.nodes.map((node) => this.neighbourManager.getEdges(node.id));
-  // }
-  // getTunnels(): Tunnels {
-  //   return this.nodes.map((node) => this.tunnelManager.getEdges(node.id));
-  // }
 }

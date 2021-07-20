@@ -49,8 +49,6 @@ class DelaunayMaze implements Maze {
       );
     }
 
-    // console.log(this.mazeMap);
-
     this.mazeMap.compile();
   }
 
