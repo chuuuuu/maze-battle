@@ -1,11 +1,7 @@
 export function hashTwoFloat(x: number, y: number, maximum: number): number {
-  // todo
   x = (x * 18397) % maximum;
-  y = (x * 20483) % maximum;
+  y = (y * 20483) % maximum;
   return Math.floor((((x + y) * (x + y + 1)) / 2 + x) % maximum);
-  // return Math.floor((((x + y) * (x + y + 1)) / 2 + x) % maximum);
-  // return Math.floor(x * 18397 + y * 20483) % maximum;
-  // return Math.floor(x + y * 0) % maximum;
 }
 
 export interface Key<T> {
@@ -30,7 +26,7 @@ export type KeyValuePair<S, T> = {
   value: T;
 };
 
-let collision = 0;
+// let collision = 0;
 
 export class KeyValueList<S, T> {
   keyValuePairList: KeyValuePair<S, T>[];
@@ -57,8 +53,11 @@ export class KeyValueList<S, T> {
       }
     }
 
-    collision++;
-    console.log(collision);
+    // if (this.keyValuePairList.length > 1) {
+    //   collision++;
+    //   console.log(collision);
+    //   console.log(this.keyValuePairList);
+    // }
     this.keyValuePairList.push(pair);
   }
 
@@ -89,7 +88,7 @@ export class HashTable<S, T> {
   }
 
   insert(pair: KeyValuePair<S, T>): void {
-    if (this.table.length * 0.01 < this.numKeyValuePair) {
+    if (this.table.length * 0.1 < this.numKeyValuePair) {
       this.expand();
     }
 

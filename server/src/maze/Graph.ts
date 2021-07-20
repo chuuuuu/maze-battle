@@ -152,7 +152,7 @@ export class Graph {
     this.edges[edgeid].isTunnel = true;
   }
 
-  getEdgeid(nodeid1: Index, nodeid2: Index) {
+  getEdgeid(nodeid1: Index, nodeid2: Index): Index {
     return this.nodesToEdge[nodeid1][nodeid2];
   }
 
