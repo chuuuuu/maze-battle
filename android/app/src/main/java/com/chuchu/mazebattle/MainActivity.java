@@ -9,6 +9,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.chuchu.mazebattle.maze.Delaunay;
+import com.chuchu.mazebattle.parser.Parser;
+
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -35,6 +39,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import okio.ByteString;
 
 
+
+
 public class MainActivity extends AppCompatActivity {
     private GameView gameView;
     private final HashMap<String, List<Cookie>> cookieStore = new HashMap<>();
@@ -44,17 +50,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         gameView = findViewById(R.id.gameView);
-        Button btPost = findViewById(R.id.button_POST);
         Button btGet = findViewById(R.id.button_GET);
         Button btWebSocket = findViewById(R.id.button_WebSocket);
         /**傳送GET*/
         btGet.setOnClickListener(v -> {
             sendGET();
         });
-        /**傳送POST*/
-        btPost.setOnClickListener(v -> {
-            sendPOST();
-        });
+
         /**傳送WebSocket*/
         btWebSocket.setOnClickListener(v -> {
             sendWebSocket();
@@ -107,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         /**設置傳送需求*/
         while (cookieStore.get("192.168.1.108") == null);
         request = new Request.Builder()
-                .url("http://192.168.1.108:5000/maze_with_session")
+                .url("http://192.168.1.108:5000/gameinfo/80")
                 .header("Cookie","")//有Cookie需求的話則可用此發送
 //                .addHeader("","")//如果API有需要header的則可使用此發送
                 .build();
@@ -125,9 +127,9 @@ public class MainActivity extends AppCompatActivity {
                 /**取得回傳*/
                 try {
                     //System.out.println(response.body().string());
-                    Grids grids = new Grids(new JSONObject(response.body().string()));
-
-                    gameView.addElements(grids);
+                    JSONObject mazeInfo = new JSONObject(response.body().string()).getJSONObject("mazeInfo");
+                    Delaunay delaunay = new Delaunay(Parser.triangleParser(mazeInfo.getJSONArray("delaunay_triangles")), Parser.halfEdgeParser(mazeInfo.getJSONArray("delaunay_halfedges")), Parser.circumcenterParser(mazeInfo.getJSONArray("voronoi_circumcenters")), Parser.nodeParser(mazeInfo.getJSONArray("nodes"), mazeInfo.getJSONArray("tunnels"), mazeInfo.getJSONArray("neighbours")));
+                    gameView.addElements(delaunay);
 
                     gameView.invalidate();
                     //tvRes.setText("GET回傳：\n" + grids);
@@ -140,42 +142,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void sendPOST() {
-        //TextView tvRes = findViewById(R.id.text_Respond);
-        /**建立連線*/
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
-                .build();
-        /**設置傳送所需夾帶的內容*/
-        FormBody formBody = new FormBody.Builder()
-                .add("userId", "1")
-                .add("id", "1")
-                .add("title", "Test okHttp")
-                .build();
-        /**設置傳送需求*/
-        Request request = new Request.Builder()
-                .url("https://jsonplaceholder.typicode.com/posts")
-                .post(formBody)
-                .build();
-        /**設置回傳*/
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                /**如果傳送過程有發生錯誤*/
-                //tvRes.setText(e.getMessage());
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                /**取得回傳*/
-                //tvRes.setText("POST回傳：\n" + response.body().string());
-            }
-        });
-    }
 
     private void sendWebSocket() {
-        EditText edWebSocket = findViewById(R.id.editText_WebSocket);
+        //EditText edWebSocket = findViewById(R.id.editText_WebSocket);
         //TextView tvRes = findViewById(R.id.text_Respond);
         /**設置傳送需求*/
         Request request = new Request.Builder()
@@ -223,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onOpen(@NotNull WebSocket webSocket, @NotNull Response response) {
                 super.onOpen(webSocket, response);
-                webSocket.send(edWebSocket.getText().toString());
+                //webSocket.send(edWebSocket.getText().toString());
 //                webSocket.cancel();//想斷開連線的話請加這行
 
             }

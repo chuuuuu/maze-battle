@@ -6,22 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/button_POST"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="傳送post"
+    <com.chuchu.mazebattle.JoystickView
+        android:layout_width="287dp"
+        android:layout_height="297dp"
+        android:background="@color/black"
+        app:JV_backgroundColor="@color/white_80"
+        app:JV_backgroundSizeRatio="50%"
+        app:JV_borderColor="@color/white_70"
+        app:JV_borderWidth="1dp"
+        app:JV_buttonColor="@color/white_70"
+        app:JV_buttonSizeRatio="20%"
+        app:JV_fixedCenter="false"
+        app:JV_visible="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_GET"
+        app:layout_constraintEnd_toStartOf="@+id/gameView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline4" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.9" />
+        app:layout_constraintGuide_percent="0.88" />
 
     <Button
         android:id="@+id/button_GET"
@@ -30,18 +38,21 @@
         android:text="傳送GET"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.548"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline4" />
+        app:layout_constraintTop_toTopOf="@+id/guideline4"
+        app:layout_constraintVertical_bias="1.0" />
 
     <com.chuchu.mazebattle.GameView
         android:id="@+id/gameView"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="424dp"
+        android:layout_height="365dp"
+        android:layout_marginTop="4dp"
 
-        android:background="@android:color/white"
+        android:background="@color/purple_200"
+
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintHorizontal_bias="0.947"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -55,15 +66,5 @@
         app:layout_constraintStart_toEndOf="@+id/button_GET"
         app:layout_constraintTop_toTopOf="@+id/guideline4" />
 
-    <EditText
-        android:id="@+id/editText_WebSocket"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="傳送WebSocket"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/guideline4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
