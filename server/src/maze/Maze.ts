@@ -1,5 +1,5 @@
 import { Index, Graph, Node, Edge, Vertex } from "./Graph";
-import { shuffle } from "../utils/shuffle";
+// import { shuffle } from "../utils/shuffle";
 import Sampler from "poisson-disk-sampling";
 import { Delaunay, Voronoi } from "d3-delaunay";
 
@@ -74,7 +74,13 @@ export class MazeFactory {
 
   static build_road(mazeMap: Graph, seen: Seen, current_nodeid: Index): void {
     seen.add(current_nodeid);
-    const nodeids = shuffle<Index>(mazeMap.getNeighbours(current_nodeid));
+    const nodeids = mazeMap
+      .getNeighbours(current_nodeid)
+      .sort((nodeid1: number, nodeid2: number): number => {
+        const wallLen1 = mazeMap.getWallLength(current_nodeid, nodeid1);
+        const wallLen2 = mazeMap.getWallLength(current_nodeid, nodeid2);
+        return wallLen2 - wallLen1;
+      });
     nodeids.forEach((next_nodeid) => {
       if (seen.has(next_nodeid)) {
         return;

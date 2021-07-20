@@ -21,7 +21,7 @@ export class Graph {
   edges: Edge[];
   private vertexTable: HashTable<Vector, Index>;
   private edgeTable: HashTable<UnorderedPair, Index>;
-  private nodesToEdge: Record<Index, Record<Index, Index>>;
+  nodesToEdge: Record<Index, Record<Index, Index>>;
 
   constructor() {
     this.nodes = [];
@@ -150,5 +150,22 @@ export class Graph {
   setTunnel(nodeid1: Index, nodeid2: Index): void {
     const edgeid = this.nodesToEdge[nodeid1][nodeid2];
     this.edges[edgeid].isTunnel = true;
+  }
+
+  getEdgeid(nodeid1: Index, nodeid2: Index) {
+    return this.nodesToEdge[nodeid1][nodeid2];
+  }
+
+  getWallLength(nodeid1: Index, nodeid2: Index): number {
+    const edgeid = this.getEdgeid(nodeid1, nodeid2);
+    const vertexid0 = this.edges[edgeid].vertexid[0];
+    const vertexid1 = this.edges[edgeid].vertexid[1];
+
+    const distance = Vector.distance(
+      this.vertexs[vertexid0].position,
+      this.vertexs[vertexid1].position
+    );
+
+    return distance;
   }
 }
