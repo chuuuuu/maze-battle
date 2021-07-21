@@ -6,10 +6,37 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
+
+    <Button
+        android:id="@+id/button_GET"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="傳送GET"
+        app:layout_constraintBottom_toTopOf="@+id/joystickView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.003"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.389" />
+
+    <com.chuchu.mazebattle.GameView
+        android:id="@+id/gameView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:GV_mazeHeight="200"
+        app:GV_mazeWidth="200"
+        app:GV_mazeInsideBackground="@color/purple_200"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.chuchu.mazebattle.JoystickView
-        android:layout_width="287dp"
+        android:id="@+id/joystickView"
+        android:orientation="horizontal"
+        android:layout_width="297dp"
         android:layout_height="297dp"
-        android:background="@color/black"
+        android:background="@color/white_0"
         app:JV_backgroundColor="@color/white_80"
         app:JV_backgroundSizeRatio="50%"
         app:JV_borderColor="@color/white_70"
@@ -18,41 +45,12 @@
         app:JV_buttonSizeRatio="20%"
         app:JV_fixedCenter="false"
         app:JV_visible="false"
+
+
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/gameView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.88" />
-
-    <Button
-        android:id="@+id/button_GET"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="傳送GET"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="110dp"
+        android:layout_marginRight="430dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.548"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline4"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <com.chuchu.mazebattle.GameView
-        android:id="@+id/gameView"
-        android:layout_width="424dp"
-        android:layout_height="365dp"
-        android:layout_marginTop="4dp"
-
-        android:background="@color/purple_200"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.947"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -61,10 +59,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="接收WebSocket"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/joystickView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.03"
         app:layout_constraintStart_toEndOf="@+id/button_GET"
-        app:layout_constraintTop_toTopOf="@+id/guideline4" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.389" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

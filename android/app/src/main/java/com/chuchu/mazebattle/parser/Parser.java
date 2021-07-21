@@ -4,8 +4,10 @@ package com.chuchu.mazebattle.parser;
 
 import android.graphics.Point;
 
+import com.chuchu.mazebattle.maze.Edge;
 import com.chuchu.mazebattle.maze.Node;
 import com.chuchu.mazebattle.maze.PointDouble;
+import com.chuchu.mazebattle.maze.Vertex;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,14 +17,12 @@ import java.util.ArrayList;
 
 public class Parser {
     // Create node array by parsing jsonNodes, jsonTunnels and jsonNeighbors
-    public static ArrayList<Node> nodeParser(JSONArray jsonNodes, JSONArray jsonTunnels, JSONArray jsonNeighbors){
+    public static ArrayList<Node> nodeParser(JSONArray jsonNodes){
         ArrayList<Node> nodes = new ArrayList<>();
         for (int i = 0; i < jsonNodes.length(); i++){
             try {
                 JSONObject jsonPosition = jsonNodes.getJSONObject(i).getJSONObject("position");
-                JSONArray jsonTunnel = jsonTunnels.getJSONArray(i);
-                JSONArray jsonNeighbor = jsonNeighbors.getJSONArray(i);
-                Node node = new Node(i, new PointDouble(jsonPosition.getDouble("x"), jsonPosition.getDouble("y")), toTunnels(jsonTunnel), toNeighbors(jsonNeighbor));
+                Node node = new Node(jsonNodes.getJSONObject(i).getInt("id"), new PointDouble(jsonPosition.getDouble("x"), jsonPosition.getDouble("y")));
                 nodes.add(node);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -31,25 +31,31 @@ public class Parser {
         return nodes;
     }
 
-
-
-    private static ArrayList<Integer> toTunnels(JSONArray jsonTunnels) throws JSONException {
-        ArrayList<Integer> tunnels = new ArrayList<>();
-        for (int i = 0; i < jsonTunnels.length(); i++){
-            tunnels.add(jsonTunnels.getInt(i));
+    // Create node array by parsing jsonNodes, jsonTunnels and jsonNeighbors
+    public static ArrayList<Vertex> vertexParser(JSONArray jsonVertices){
+        ArrayList<Vertex> vertices = new ArrayList<>();
+        for (int i = 0; i < jsonVertices.length(); i++){
+            try {
+                JSONObject jsonPosition = jsonVertices.getJSONObject(i).getJSONObject("position");
+                Vertex vertex = new Vertex(jsonVertices.getJSONObject(i).getInt("id"), new PointDouble(jsonPosition.getDouble("x"), jsonPosition.getDouble("y")));
+                vertices.add(vertex);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
-        return tunnels;
+        return vertices;
     }
 
 
-    private static ArrayList<Integer> toNeighbors(JSONArray jsonNeighbors) throws JSONException {
-        ArrayList<Integer> neighbors = new ArrayList<>();
-        for (int i = 0; i < jsonNeighbors.length(); i++){
-            neighbors.add(jsonNeighbors.getInt(i));
+    // Create edges
+    public static ArrayList<Edge> edgeParser(JSONArray jsonEdges) throws JSONException {
+        ArrayList<Edge> edges = new ArrayList<>();
+        for (int i = 0; i < jsonEdges.length(); i++){
+            JSONObject jsonEdge = jsonEdges.getJSONObject(i);
+            edges.add(new Edge(jsonEdge.getInt("id"), toVertexIds(jsonEdge.getJSONArray("vertexid")), jsonEdge.getBoolean("isTunnel")));
         }
-        return neighbors;
+        return edges;
     }
-
 
     // Create triangles
     public static ArrayList<Integer> triangleParser(JSONArray jsonTriangles) throws JSONException {
@@ -77,5 +83,13 @@ public class Parser {
             circumcenters.add(point);
         }
         return circumcenters;
+    }
+
+    private static ArrayList<Integer> toVertexIds(JSONArray jsonVertexIds) throws JSONException {
+        ArrayList<Integer> vertexIds = new ArrayList<>();
+        for (int i = 0; i < jsonVertexIds.length(); i++){
+            vertexIds.add(jsonVertexIds.getInt(i));
+        }
+        return vertexIds;
     }
 }

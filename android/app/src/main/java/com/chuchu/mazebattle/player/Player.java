@@ -1,16 +1,23 @@
 package com.chuchu.mazebattle.player;
 
-import com.chuchu.mazebattle.maze.Node;
+import android.graphics.Canvas;
 
-public class Player {
+import com.chuchu.mazebattle.Drawable;
+import com.chuchu.mazebattle.maze.Node;
+import com.chuchu.mazebattle.maze.PointDouble;
+
+public class Player implements Drawable {
     private int userId;
     private String userName;
-    private Node room;
+    private int velocity;
+    private PointDouble position;
 
-    public Player(int userId, String userName, Node room) {
+    public Player(int userId, String userName, int velocity, PointDouble initPosition) {
         this.userId = userId;
         this.userName = userName;
-        this.room = room;
+        this.velocity = velocity;
+        this.position = initPosition;
+
     }
 
     public int getUserId() {
@@ -21,6 +28,14 @@ public class Player {
         this.userId = userId;
     }
 
+    public void setVelocity(int velocity) {
+        this.velocity = velocity;
+    }
+
+    public int getVelocity() {
+        return velocity;
+    }
+
     public String getUserName() {
         return userName;
     }
@@ -29,11 +44,9 @@ public class Player {
         this.userName = userName;
     }
 
-    public Node getRoom() {
-        return room;
-    }
 
-    public void setRoom(Node room) {
-        this.room = room;
+    @Override
+    public void draw(Canvas canvas) {
+
     }
 }

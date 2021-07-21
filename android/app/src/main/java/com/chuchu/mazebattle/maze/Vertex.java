@@ -1,20 +1,15 @@
 package com.chuchu.mazebattle.maze;
 
-
-
-import java.util.ArrayList;
-
-public class Node {
-    private int index;
+public class Vertex { private int index;
     private PointDouble position;
 
 
-    public Node(int index, PointDouble position) {
+    public Vertex(int index, PointDouble position) {
         this.index = index;
         this.position = position;
     }
 
-    public Node() {
+    public Vertex() {
     }
 
     public int getIndex() {
@@ -32,6 +27,7 @@ public class Node {
     public void setPosition(PointDouble position) {
         this.position = position;
     }
+
 
 
 

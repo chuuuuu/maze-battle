@@ -39,4 +39,14 @@
 
     </declare-styleable>
 
+    <declare-styleable name="GameView">
+        <attr name="GV_mazeInsideBackground" format="color"/>
+        <attr name="GV_mazeWidth" format="integer"/>
+        <attr name="GV_mazeHeight" format="integer"/>
+    </declare-styleable>
+
+
+
+
+
 </resources>

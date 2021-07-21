@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.chuchu.mazebattle.maze.Delaunay;
+import com.chuchu.mazebattle.maze.Maze;
 import com.chuchu.mazebattle.parser.Parser;
 
 
@@ -47,7 +48,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+        JoystickView joystick = findViewById(R.id.joystickView);
 
         gameView = findViewById(R.id.gameView);
         Button btGet = findViewById(R.id.button_GET);
@@ -60,6 +63,16 @@ public class MainActivity extends AppCompatActivity {
         /**傳送WebSocket*/
         btWebSocket.setOnClickListener(v -> {
             sendWebSocket();
+        });
+
+        joystick.setOnMoveListener(new JoystickView.OnMoveListener() {
+            @Override
+            public void onMove(int angle, int strength) {
+                float speed = (float) 2.5;
+                if (strength != 0)
+                    gameView.setTranslate((float) -Math.cos(((double) angle / 180) * Math.PI) * 10 * speed, (float) Math.sin(((double) angle / 180) * Math.PI) * 10 * speed);
+
+            }
         });
     }
 
@@ -109,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         /**設置傳送需求*/
         while (cookieStore.get("192.168.1.108") == null);
         request = new Request.Builder()
-                .url("http://192.168.1.108:5000/gameinfo/80")
+                .url("http://192.168.1.108:5000/gameinfo/0/200/200")
                 .header("Cookie","")//有Cookie需求的話則可用此發送
 //                .addHeader("","")//如果API有需要header的則可使用此發送
                 .build();
@@ -128,8 +141,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     //System.out.println(response.body().string());
                     JSONObject mazeInfo = new JSONObject(response.body().string()).getJSONObject("mazeInfo");
-                    Delaunay delaunay = new Delaunay(Parser.triangleParser(mazeInfo.getJSONArray("delaunay_triangles")), Parser.halfEdgeParser(mazeInfo.getJSONArray("delaunay_halfedges")), Parser.circumcenterParser(mazeInfo.getJSONArray("voronoi_circumcenters")), Parser.nodeParser(mazeInfo.getJSONArray("nodes"), mazeInfo.getJSONArray("tunnels"), mazeInfo.getJSONArray("neighbours")));
-                    gameView.addElements(delaunay);
+                    Maze maze = new Maze(Parser.vertexParser(mazeInfo.getJSONArray("vertexs")), Parser.edgeParser(mazeInfo.getJSONArray("edges")), gameView.getMazeWidth(), gameView.getMazeHeight());
+                    gameView.setMaze(maze);
 
                     gameView.invalidate();
                     //tvRes.setText("GET回傳：\n" + grids);
