@@ -2,33 +2,58 @@ import { Delaunay } from "d3-delaunay";
 import { Vector, VectorKey } from "../utils/Vector";
 import { HashTable } from "../utils/HashTable";
 import { UnorderedPair, UnorderedPairKey } from "../utils/UnorderedPair";
+import { Field, ObjectType } from "type-graphql";
 
-export type Index = number;
-export type Tunnels = Record<Index, Index[]>;
-export type Neighbours = Record<Index, Index[]>;
-export type Node = { id: Index; position: Vector; edgeids: Index[] };
-export type Edge = {
-  id: Index;
-  vertexid: [Index, Index];
-  nodeids: Index[];
+export type Tunnels = Record<number, number[]>;
+export type Neighbours = Record<number, number[]>;
+
+@ObjectType()
+export class Node {
+  @Field()
+  id: number;
+  @Field()
+  position: Vector;
+  @Field(()=>[Number])
+  edgeids: number[];
+}
+
+@ObjectType()
+export class Edge {
+  @Field()
+  id: number;
+  @Field(()=>[Number, Number])
+  vertexid: [number, number];
+  @Field(()=>[Number])
+  nodeids: number[];
+  @Field()
   isTunnel: boolean;
-};
-export type Vertex = { id: Index; position: Vector };
+}
+@ObjectType()
+export class Vertex {
+  @Field()
+  id: number;
+  @Field()
+  position: Vector;
+}
 
+@ObjectType()
 export class Graph {
+  @Field(() => [Node])
   nodes: Node[];
+  @Field(() => [Vertex])
   vertexs: Vertex[];
+  @Field(() => [Edge])
   edges: Edge[];
-  private vertexTable: HashTable<Vector, Index>;
-  private edgeTable: HashTable<UnorderedPair, Index>;
-  nodesToEdge: Record<Index, Record<Index, Index>>;
+  private vertexTable: HashTable<Vector, number>;
+  private edgeTable: HashTable<UnorderedPair, number>;
+  nodesToEdge: Record<number, Record<number, number>>;
 
   constructor() {
     this.nodes = [];
     this.vertexs = [];
     this.edges = [];
-    this.vertexTable = new HashTable<Vector, Index>();
-    this.edgeTable = new HashTable<UnorderedPair, Index>();
+    this.vertexTable = new HashTable<Vector, number>();
+    this.edgeTable = new HashTable<UnorderedPair, number>();
     this.nodesToEdge = {};
   }
 
@@ -58,7 +83,7 @@ export class Graph {
       // get vertexid
       const point = polygon[i];
       const vertexKey = VectorKey.fromPoint(point);
-      const vertexid: Index | null = this.vertexTable.find(vertexKey);
+      const vertexid: number | null = this.vertexTable.find(vertexKey);
       if (prevVertexid === null) {
         console.error("prevVertexid should not be null");
         continue;
@@ -94,7 +119,7 @@ export class Graph {
     for (let i = 1; i < pointlen; i++) {
       const point = polygon[i];
       const vertexKey = VectorKey.fromPoint(point);
-      const vertexid: Index | null = this.vertexTable.find(vertexKey);
+      const vertexid: number | null = this.vertexTable.find(vertexKey);
       if (vertexid === null) {
         console.error("vertexid should not be null");
         continue;
@@ -141,22 +166,22 @@ export class Graph {
     }
   }
 
-  getNeighbours(nodeid: Index): Index[] {
+  getNeighbours(nodeid: number): number[] {
     return Array.from(Object.keys(this.nodesToEdge[nodeid])).map((str) =>
       parseInt(str)
     );
   }
 
-  setTunnel(nodeid1: Index, nodeid2: Index): void {
+  setTunnel(nodeid1: number, nodeid2: number): void {
     const edgeid = this.nodesToEdge[nodeid1][nodeid2];
     this.edges[edgeid].isTunnel = true;
   }
 
-  getEdgeid(nodeid1: Index, nodeid2: Index): Index {
+  getEdgeid(nodeid1: number, nodeid2: number): number {
     return this.nodesToEdge[nodeid1][nodeid2];
   }
 
-  getWallLength(nodeid1: Index, nodeid2: Index): number {
+  getWallLength(nodeid1: number, nodeid2: number): number {
     const edgeid = this.getEdgeid(nodeid1, nodeid2);
     const vertexid0 = this.edges[edgeid].vertexid[0];
     const vertexid1 = this.edges[edgeid].vertexid[1];

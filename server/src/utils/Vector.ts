@@ -1,8 +1,17 @@
 import { Delaunay } from "d3-delaunay";
+import { Field, ObjectType } from "type-graphql";
 import { hashTwoFloat, Key } from "./HashTable";
 
+@ObjectType()
 export class Vector {
-  constructor(public x: number, public y: number) {}
+  @Field()
+  x: number;
+  @Field()
+  y: number;
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
 
   static add(vec1: Vector, vec2: Vector): Vector {
     return new Vector(vec1.x + vec2.x, vec1.y + vec2.y);

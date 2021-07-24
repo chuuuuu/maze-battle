@@ -1,43 +1,59 @@
-import { Index, Graph, Node, Edge, Vertex } from "./Graph";
-// import { shuffle } from "../utils/shuffle";
+import { Graph } from "./Graph";
+import { shuffle } from "../utils/shuffle";
 import Sampler from "poisson-disk-sampling";
 import { Delaunay, Voronoi } from "d3-delaunay";
+import {
+  Field,
+  InterfaceType,
+  ObjectType,
+  registerEnumType,
+} from "type-graphql";
 
-export interface Maze {
+@InterfaceType()
+export abstract class Maze {
+  @Field()
   mazeMap: Graph;
-  getInfo(): MazeInfo;
 }
 
-export type Seen = Set<Index>;
-
-export type MazeInfo = {
-  nodes: Node[];
-  edges: Edge[];
-  vertexs: Vertex[];
-  boundary: Boundary;
-};
+export type Seen = Set<number>;
 
 export type Boundary = [number, number];
 
+export type DelaunayMazeConfig = {
+  boundary: Boundary;
+  poissonDiskSamplingConfig: {
+    minDistance: number;
+    maxDistance: number;
+    tries: number;
+  };
+  minWallLen: number;
+};
+
+@ObjectType({ implements: [Maze] })
 class DelaunayMaze implements Maze {
   mazeMap: Graph;
   boundary: Boundary;
   delaunay: Delaunay<Delaunay.Point>;
   voronoi: Voronoi<Delaunay.Point>;
   // points:
-  constructor(boundary: Boundary) {
-    this.boundary = boundary;
+  constructor(delaunayMazeConfig: DelaunayMazeConfig) {
+    this.boundary = delaunayMazeConfig.boundary;
 
     const sampler = new Sampler({
-      shape: boundary,
-      minDistance: 10,
-      maxDistance: 20,
-      tries: 30,
+      shape: delaunayMazeConfig.boundary,
+      minDistance: delaunayMazeConfig.poissonDiskSamplingConfig.minDistance,
+      maxDistance: delaunayMazeConfig.poissonDiskSamplingConfig.maxDistance,
+      tries: delaunayMazeConfig.poissonDiskSamplingConfig.tries,
     });
 
     const pdPoints = sampler.fill();
     const delaunay = Delaunay.from(pdPoints);
-    const voronoi = delaunay.voronoi([0, 0, boundary[0], boundary[1]]);
+    const voronoi = delaunay.voronoi([
+      0,
+      0,
+      delaunayMazeConfig.boundary[0],
+      delaunayMazeConfig.boundary[1],
+    ]);
     const polygons = Array.from(voronoi.cellPolygons());
 
     const numPoint = pdPoints.length;
@@ -50,44 +66,60 @@ class DelaunayMaze implements Maze {
     }
 
     this.mazeMap.compile();
+
+    const seen: Seen = new Set<number>();
+    const start: number = this.mazeMap.nodes[0].id;
+
+    this.buildRoad(seen, start, delaunayMazeConfig.minWallLen);
   }
 
-  getInfo(): MazeInfo {
-    return {
-      nodes: this.mazeMap.nodes,
-      edges: this.mazeMap.edges,
-      vertexs: this.mazeMap.vertexs,
-      boundary: this.boundary,
-    };
-  }
-}
-
-export class MazeFactory {
-  static createDelaunayMaze(width: number, height: number): DelaunayMaze {
-    const seen: Seen = new Set<Index>();
-    const maze = new DelaunayMaze([width, height]);
-    const start: Index = maze.mazeMap.nodes[0].id;
-
-    this.build_road(maze.mazeMap, seen, start);
-    return maze;
-  }
-
-  static build_road(mazeMap: Graph, seen: Seen, current_nodeid: Index): void {
+  buildRoad(seen: Seen, current_nodeid: number, minWallLen: number) {
     seen.add(current_nodeid);
-    const nodeids = mazeMap
-      .getNeighbours(current_nodeid)
-      .sort((nodeid1: number, nodeid2: number): number => {
-        const wallLen1 = mazeMap.getWallLength(current_nodeid, nodeid1);
-        const wallLen2 = mazeMap.getWallLength(current_nodeid, nodeid2);
-        return wallLen2 - wallLen1;
-      });
+    const nodeids = shuffle(this.mazeMap.getNeighbours(current_nodeid));
+
     nodeids.forEach((next_nodeid) => {
       if (seen.has(next_nodeid)) {
         return;
       }
+      if (
+        this.mazeMap.getWallLength(current_nodeid, next_nodeid) < minWallLen
+      ) {
+        return;
+      }
 
-      mazeMap.setTunnel(current_nodeid, next_nodeid);
-      this.build_road(mazeMap, seen, next_nodeid);
+      this.mazeMap.setTunnel(current_nodeid, next_nodeid);
+      this.buildRoad(seen, next_nodeid, minWallLen);
     });
+  }
+}
+
+export const NoobMazeConfig: DelaunayMazeConfig = {
+  boundary: [500, 500] as Boundary,
+  minWallLen: 15,
+  poissonDiskSamplingConfig: {
+    minDistance: 50,
+    maxDistance: 50,
+    tries: 30,
+  },
+};
+
+export enum MAZENAME {
+  NOOB,
+}
+
+registerEnumType(MAZENAME, {
+  name: "MAZENAME",
+  description: "list of mazename",
+});
+
+export class MazeFactory {
+  static createMaze(mazename: MAZENAME): Maze {
+    switch (mazename) {
+      case MAZENAME.NOOB:
+        return new DelaunayMaze(NoobMazeConfig);
+
+      default:
+        return new DelaunayMaze(NoobMazeConfig);
+    }
   }
 }

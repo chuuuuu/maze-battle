@@ -1,78 +1,22 @@
-import { Vector } from "../utils/Vector";
-import { Effect } from "./Effect";
-import { Index } from "./Graph";
-import { Role, RoleFactory } from "./Role";
+// import { User } from "src/entities/User";
+// import { Vector } from "../utils/Vector";
+// import { Effect } from "./Effect";
+// import { Role } from "./Role";
 
-export type PlayerInfo = {
-  // user info
-  userid: number;
-  username: string;
+// export class Player {
+//   id: number;
+//   user: User;
+//   role?: Role;
+//   node?: Node;
+//   position?: Vector;
+//   effects?: Effect[];
+// }
 
-  // game info
-  velocity: number;
-  position: Vector;
-  node: Index;
-  effects: Effect[];
-
-  // role
-  role: Role;
-};
-
-export interface PlayerInterface {
-  // user info
-  userid: number;
-  username: string;
-
-  // game info
-  velocity: number;
-  position: Vector;
-  node: Index;
-  effects: Effect[];
-
-  // role
-  role: Role;
-
-  getInfo: () => PlayerInfo;
-}
-
-export class Player implements PlayerInterface {
-  // user info
-  userid: number;
-  username: string;
-
-  // game info
-  velocity: number;
-  position: Vector;
-  node: Index;
-  effects: Effect[];
-
-  // role
-  role: Role;
-  constructor(userid: number, username: string, node: Index, position: Vector) {
-    this.userid = userid;
-    this.username = username;
-
-    this.role = RoleFactory.getNoob();
-    this.velocity = this.role.velocity;
-    this.node = node;
-    this.position = position;
-    this.effects = [];
-  }
-
-  getInfo(): PlayerInfo {
-    return {
-      // user info
-      userid: this.userid,
-      username: this.username,
-
-      // game info
-      velocity: this.velocity,
-      position: this.position,
-      node: this.node,
-      effects: this.effects,
-
-      // role
-      role: this.role,
-    };
-  }
-}
+// export class PlayerFactory {
+//   static players: Player[] = [];
+//   static createPlayer(user: User): Player {
+//     const id = this.players.length;
+//     const player = { id, user };
+//     return player;
+//   }
+// }
