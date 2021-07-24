@@ -8,6 +8,7 @@
 
 
 
+
     <Button
         android:id="@+id/button_GET"
         android:layout_width="wrap_content"
@@ -25,9 +26,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:GV_mazeHeight="200"
-        app:GV_mazeWidth="200"
         app:GV_mazeInsideBackground="@color/purple_200"
+        app:GV_mazeWidth="200"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,5 +68,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.389" />
 
+    <com.chuchu.mazebattle.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="186dp"
+        android:layout_height="133dp"
+        app:layout_constraintBottom_toBottomOf="@+id/gameView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.577"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.428" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

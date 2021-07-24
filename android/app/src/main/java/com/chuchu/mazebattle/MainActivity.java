@@ -11,7 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.chuchu.mazebattle.maze.Delaunay;
 import com.chuchu.mazebattle.maze.Maze;
+import com.chuchu.mazebattle.maze.PointDouble;
 import com.chuchu.mazebattle.parser.Parser;
+import com.chuchu.mazebattle.player.Player;
 
 
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +46,7 @@ import okio.ByteString;
 
 public class MainActivity extends AppCompatActivity {
     private GameView gameView;
+    private PlayerView playerView;
     private final HashMap<String, List<Cookie>> cookieStore = new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         JoystickView joystick = findViewById(R.id.joystickView);
+        playerView = findViewById(R.id.playerView);
+
 
         gameView = findViewById(R.id.gameView);
         Button btGet = findViewById(R.id.button_GET);
@@ -68,12 +73,24 @@ public class MainActivity extends AppCompatActivity {
         joystick.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                float speed = (float) 2.5;
-                if (strength != 0)
-                    gameView.setTranslate((float) -Math.cos(((double) angle / 180) * Math.PI) * 10 * speed, (float) Math.sin(((double) angle / 180) * Math.PI) * 10 * speed);
+                if (strength != 0){
+                    gameView.getPlayer().move((float) Math.cos(((double) angle / 180) * Math.PI) * 10, (float) -Math.sin(((double) angle / 180) * Math.PI) * 10);
+                    gameView.invalidate();
+                    playerView.move((float) Math.cos(((double) angle / 180) * Math.PI) * 10 >= 0? Player.RIGHT : Player.LEFT);
+                }
 
             }
+
+            @Override
+            public void onStop(){
+                playerView.stop();
+            }
         });
+
+        // set player in game view
+        Player player = new Player(0, "chu", (float) 2.5, new PointDouble(0, 0));
+        gameView.setPlayer(player);
+        playerView.initPlayer(player);
     }
 
     private void sendGET() {
@@ -97,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         /**設置傳送需求*/
         Request request = new Request.Builder()
-                .url("http://192.168.1.108:5000/login")
+                .url("http://192.168.1.101:5000/login")
                 .header("Cookie","")//有Cookie需求的話則可用此發送
 //                .addHeader("","")//如果API有需要header的則可使用此發送
                 .build();
@@ -120,9 +137,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /**設置傳送需求*/
-        while (cookieStore.get("192.168.1.108") == null);
+        while (cookieStore.get("192.168.1.101") == null);
         request = new Request.Builder()
-                .url("http://192.168.1.108:5000/gameinfo/0/200/200")
+                .url("http://192.168.1.101:5000/gameinfo/0/200/200")
                 .header("Cookie","")//有Cookie需求的話則可用此發送
 //                .addHeader("","")//如果API有需要header的則可使用此發送
                 .build();
@@ -212,5 +229,17 @@ public class MainActivity extends AppCompatActivity {
         });
         /**清除並關閉執行緒*/
         client.dispatcher().executorService().shutdown();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        playerView.resume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        playerView.pause();
     }
 }

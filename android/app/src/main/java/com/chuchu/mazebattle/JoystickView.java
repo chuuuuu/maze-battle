@@ -37,6 +37,8 @@ public class JoystickView extends View implements Runnable {
          * @param strength current strength
          */
         void onMove(int angle, int strength);
+
+        void onStop();
     }
 
 
@@ -473,6 +475,14 @@ public class JoystickView extends View implements Runnable {
 
             //initPosition
             initPosition();
+
+            //call stop
+            post(new Runnable() {
+                public void run() {
+                    if (mCallback != null)
+                        mCallback.onStop();
+                }
+            });
 
             if (mThread != null && mThread.isAlive()) {
                 mThread.interrupt();

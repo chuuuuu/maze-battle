@@ -16,6 +16,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import com.chuchu.mazebattle.maze.Maze;
+import com.chuchu.mazebattle.maze.PointDouble;
 import com.chuchu.mazebattle.player.Player;
 
 import java.util.ArrayList;
@@ -51,12 +52,16 @@ public class GameView extends View {
         translateY = 0;
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         int cnt = canvas.save();
 
-        canvas.translate(translateX, translateY);
+        canvas.translate((float) (getWidth() / 2 - getPlayer().getPosition().x), (float) (getHeight() / 2 - getPlayer().getPosition().y));
 
         Paint recPaint = new Paint();
         recPaint.setColor(Color.BLACK);
@@ -64,8 +69,13 @@ public class GameView extends View {
         recPaint.setColor(mazeInsideBackground);
         canvas.drawRect(0, 0, mazeWidth * 20, mazeHeight * 20, recPaint);
 
-        if(maze != null)
+        if (maze != null)
             maze.draw(canvas);
+
+        /*if (player != null)
+            player.draw(canvas);*/
+
+
 
         showVisibleRegion(canvas, 400);
         canvas.restoreToCount(cnt);
@@ -81,23 +91,19 @@ public class GameView extends View {
         this.player = player;
     }
 
-    public void setTranslate(float translateX, float translateY) {
-        this.translateX += translateX;
-        this.translateY += translateY;
-        invalidate();
-    }
+
 
     public void showVisibleRegion(Canvas canvas, int regionRadios){
         Paint mPaintRegion = new Paint();
+        PointDouble playerPosition = getPlayer().getPosition();
 
-        int cnt = canvas.saveLayer(-mazeWidth * 10, -mazeHeight * 10, mazeWidth * 30, mazeHeight * 30, mPaintRegion);
+        //int cnt = canvas.saveLayer(-mazeWidth * 10, -mazeHeight * 10, mazeWidth * 30, mazeHeight * 30, mPaintRegion);
+        int cnt = canvas.saveLayer((float) playerPosition.x - getWidth() / 2, (float) playerPosition.y - getHeight() / 2, (float) playerPosition.x + getWidth() / 2, (float) playerPosition.y + getHeight() / 2, mPaintRegion);
         mPaintRegion.setColor(Color.BLACK);
-        canvas.drawRect(-mazeWidth * 10, -mazeHeight * 10, mazeWidth * 30, mazeHeight * 30, mPaintRegion);
+        canvas.drawRect((float) playerPosition.x - getWidth() / 2, (float) playerPosition.y - getHeight() / 2, (float) playerPosition.x + getWidth() / 2, (float) playerPosition.y + getHeight() / 2, mPaintRegion);
         mPaintRegion.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
-        canvas.drawCircle(getWidth() / 2 - translateX, getHeight() / 2 - translateY, regionRadios, mPaintRegion);
+        canvas.drawCircle((float) playerPosition.x, (float) playerPosition.y, regionRadios, mPaintRegion);
         mPaintRegion.setXfermode(null);
-        mPaintRegion.setColor(Color.BLUE);
-        canvas.drawCircle((float) getWidth() / 2 - translateX, (float) getHeight() / 2 - translateY, 25, mPaintRegion);
 
         canvas.restoreToCount(cnt);
     }
