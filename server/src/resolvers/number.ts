@@ -11,7 +11,7 @@ import {
 @Resolver()
 export class NumberResolver {
   @Mutation(() => Number)
-  async postAction(
+  async postNumber(
     @Arg("number") number: number,
     @PubSub() pubSub: PubSubEngine,
     @Arg("topic") topic: string,
