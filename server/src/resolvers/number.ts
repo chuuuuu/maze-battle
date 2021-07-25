@@ -9,7 +9,7 @@ import {
 } from "type-graphql";
 
 @Resolver()
-export class GameResolver {
+export class NumberResolver {
   @Mutation(() => Number)
   async postAction(
     @Arg("number") number: number,
