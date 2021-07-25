@@ -62,12 +62,12 @@ export class RoomFactory {
 
     room.items = [];
     room.maze = MazeFactory.createMaze(room.mapname);
-    room.users.forEach((user)=>{
+    room.users.forEach((user) => {
       user.role = RoleFactory.createRole(user.rolename);
-      user.effects = []
-      user.node = room.maze?.mazeMap.nodes[0]
+      user.effects = [];
+      user.node = room.maze?.mazeMap.nodes[0];
       user.position = user.node?.position;
-    })
+    });
     return null;
   }
 }

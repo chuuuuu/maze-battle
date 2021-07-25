@@ -28,6 +28,7 @@ export class Edge {
   @Field()
   isTunnel: boolean;
 }
+
 @ObjectType()
 export class Vertex {
   @Field()

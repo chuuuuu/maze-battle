@@ -12,6 +12,7 @@ import { execute, subscribe } from "graphql";
 import { UserResolver } from "./resolvers/user";
 import { MyContext } from "./types";
 import { RoomResolver } from "./resolvers/room";
+import { GameResolver } from "./resolvers/maze";
 
 declare module "express-session" {
   export interface SessionData {
@@ -48,7 +49,7 @@ const main = async () => {
 
   const httpServer = createServer(app);
   const schema = await buildSchema({
-    resolvers: [HelloResolver, UserResolver, RoomResolver],
+    resolvers: [HelloResolver, UserResolver, RoomResolver, GameResolver],
     validate: false,
   });
   const apolloServer = new ApolloServer({
