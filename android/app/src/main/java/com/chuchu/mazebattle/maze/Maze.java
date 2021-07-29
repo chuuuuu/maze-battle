@@ -28,8 +28,6 @@ public class Maze implements Drawable {
         this.height = height;
         scaleLevel = 20;
 
-
-        Collections.sort(this.edges, new EdgeComparator(vertices));
     }
 
     public ArrayList<Vertex> getVertices() {
@@ -46,10 +44,15 @@ public class Maze implements Drawable {
 
     public void setEdges(ArrayList<Edge> edges) {
         this.edges = edges;
+        Collections.sort(this.edges, new EdgeComparator(vertices));
     }
+
 
     @Override
     public void draw(Canvas canvas) {
+        //check if maze is initialized
+        if (edges == null || vertices == null) return;
+
         Paint mazePaint = new Paint();
         mazePaint.setStrokeWidth(4);
         mazePaint.setColor(Color.YELLOW);
@@ -70,8 +73,8 @@ public class Maze implements Drawable {
                 Path wall = new Path();
                 wall.moveTo((float) p1.x * scaleLevel, (float) p1.y * scaleLevel);
                 wall.lineTo((float) p2.x * scaleLevel, (float) p2.y * scaleLevel);
-                wall.lineTo((float) p2.x * scaleLevel, (float) (p2.y - 3) * scaleLevel);
-                wall.lineTo((float) p1.x * scaleLevel, (float) (p1.y - 3) * scaleLevel);
+                wall.lineTo((float) p2.x * scaleLevel, (float) (p2.y - 6) * scaleLevel);
+                wall.lineTo((float) p1.x * scaleLevel, (float) (p1.y - 6) * scaleLevel);
                 wall.close();
                 canvas.drawPath(wall, mazePaint);
 
@@ -89,8 +92,8 @@ public class Maze implements Drawable {
         Path mazeBorder = new Path();
         mazeBorder.moveTo(0, 0);
         mazeBorder.lineTo((float) width * scaleLevel, (float) 0 * scaleLevel);
-        mazeBorder.lineTo((float) width * scaleLevel, (float) (0 - 3) * scaleLevel);
-        mazeBorder.lineTo((float) 0 * scaleLevel, (float) (0 - 3) * scaleLevel);
+        mazeBorder.lineTo((float) width * scaleLevel, (float) (0 - 6) * scaleLevel);
+        mazeBorder.lineTo((float) 0 * scaleLevel, (float) (0 - 6) * scaleLevel);
         mazeBorder.close();
 
         canvas.drawPath(mazeBorder, mazePaint);
@@ -102,8 +105,8 @@ public class Maze implements Drawable {
         Path mazeBorder = new Path();
         mazeBorder.moveTo(0, height * scaleLevel);
         mazeBorder.lineTo((float) width * scaleLevel, (float) height * scaleLevel);
-        mazeBorder.lineTo((float) width * scaleLevel, (float) (height - 3) * scaleLevel);
-        mazeBorder.lineTo((float) 0 * scaleLevel, (float) (height - 3) * scaleLevel);
+        mazeBorder.lineTo((float) width * scaleLevel, (float) (height - 6) * scaleLevel);
+        mazeBorder.lineTo((float) 0 * scaleLevel, (float) (height - 6) * scaleLevel);
         mazeBorder.close();
 
         canvas.drawPath(mazeBorder, mazePaint);

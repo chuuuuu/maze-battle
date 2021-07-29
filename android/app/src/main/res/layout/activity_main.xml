@@ -7,76 +7,52 @@
     tools:context=".MainActivity">
 
 
-
-
-    <Button
-        android:id="@+id/button_GET"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="傳送GET"
-        app:layout_constraintBottom_toTopOf="@+id/joystickView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.003"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.389" />
-
-    <com.chuchu.mazebattle.GameView
-        android:id="@+id/gameView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:GV_mazeHeight="200"
-        app:GV_mazeInsideBackground="@color/purple_200"
-        app:GV_mazeWidth="200"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.chuchu.mazebattle.JoystickView
-        android:id="@+id/joystickView"
-        android:orientation="horizontal"
-        android:layout_width="297dp"
-        android:layout_height="297dp"
-        android:background="@color/white_0"
-        app:JV_backgroundColor="@color/white_80"
-        app:JV_backgroundSizeRatio="50%"
-        app:JV_borderColor="@color/white_70"
-        app:JV_borderWidth="1dp"
-        app:JV_buttonColor="@color/white_70"
-        app:JV_buttonSizeRatio="20%"
-        app:JV_fixedCenter="false"
-        app:JV_visible="false"
-
-
+    <LinearLayout
+        android:id="@+id/llLoginPanel"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:background="@drawable/shape_login_panel"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="110dp"
-        android:layout_marginRight="430dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/et_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Username" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:inputType="textPassword"/>
+
+        <TextView
+            android:layout_marginTop="15dp"
+            android:gravity="right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Forget password?"/>
+
+
+
+    </LinearLayout>
 
     <Button
-        android:id="@+id/button_WebSocket"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="接收WebSocket"
-        app:layout_constraintBottom_toTopOf="@+id/joystickView"
+        android:id="@+id/btn_login"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:text="Login"
+        app:layout_constraintBottom_toBottomOf="@id/llLoginPanel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.03"
-        app:layout_constraintStart_toEndOf="@+id/button_GET"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.389" />
-
-    <com.chuchu.mazebattle.PlayerView
-        android:id="@+id/playerView"
-        android:layout_width="186dp"
-        android:layout_height="133dp"
-        app:layout_constraintBottom_toBottomOf="@+id/gameView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.577"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.428" />
+        app:backgroundTint="@null"
+        android:background="@drawable/shape_login_button"/>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

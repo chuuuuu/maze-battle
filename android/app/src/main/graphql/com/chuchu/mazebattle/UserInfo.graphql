@@ -1,0 +1,10 @@
+query UserInfo{
+    me{
+        username
+        id
+        position{
+            x
+            y
+        }
+    }
+}

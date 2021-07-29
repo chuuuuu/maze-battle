@@ -17,6 +17,8 @@ public class Player implements Drawable {
     public static final int LEFT = 1;
     private int face;
 
+
+
     public Player(int userId, String userName, float velocity, PointDouble initPosition) {
         this.userId = userId;
         this.userName = userName;
@@ -74,4 +76,6 @@ public class Player implements Drawable {
     public void setFace(int face) {
         this.face = face;
     }
+
+
 }

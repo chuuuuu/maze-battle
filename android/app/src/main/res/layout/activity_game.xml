@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GameActivity">
+
+
+    <com.chuchu.mazebattle.GameView
+        android:id="@+id/gameView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:GV_mazeHeight="500"
+        app:GV_mazeInsideBackground="@color/purple_200"
+        app:GV_mazeWidth="500"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.chuchu.mazebattle.JoystickView
+        android:id="@+id/joystickView"
+        android:orientation="horizontal"
+        android:layout_width="297dp"
+        android:layout_height="297dp"
+        android:background="@color/white_0"
+        app:JV_backgroundColor="@color/white_80"
+        app:JV_backgroundSizeRatio="50%"
+        app:JV_borderColor="@color/white_70"
+        app:JV_borderWidth="1dp"
+        app:JV_buttonColor="@color/white_70"
+        app:JV_buttonSizeRatio="20%"
+        app:JV_fixedCenter="false"
+        app:JV_visible="false"
+
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="110dp"
+        android:layout_marginRight="430dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <com.chuchu.mazebattle.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="186dp"
+        android:layout_height="133dp"
+        app:layout_constraintBottom_toBottomOf="@+id/gameView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.577"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.428" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

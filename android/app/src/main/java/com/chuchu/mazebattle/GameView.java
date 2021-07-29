@@ -77,7 +77,7 @@ public class GameView extends View {
 
 
 
-        showVisibleRegion(canvas, 400);
+        showVisibleRegion(canvas, 500);
         canvas.restoreToCount(cnt);
     }
 

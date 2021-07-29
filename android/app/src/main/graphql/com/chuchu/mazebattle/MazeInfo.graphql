@@ -1,0 +1,23 @@
+query MazeInfo{
+    me{
+        room{
+            id
+            maze{
+                mazeMap{
+                    vertexs{
+                        id
+                        position{
+                            x
+                            y
+                        }
+                    }
+                    edges{
+                        id
+                        vertexid
+                        isTunnel
+                    }
+                }
+            }
+        }
+    }
+}

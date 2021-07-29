@@ -1,0 +1,8 @@
+mutation StartGame{
+    startGame{
+        errors
+        room{
+            id
+        }
+    }
+}

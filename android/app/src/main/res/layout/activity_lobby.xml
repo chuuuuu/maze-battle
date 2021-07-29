@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".LobbyActivity">
+
+
+    <RelativeLayout
+        android:id="@+id/ll_button"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+
+        <Button
+            android:id="@+id/btn_create_room"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="193dp"
+            android:layout_marginTop="150dp"
+            android:background="@drawable/shape_login_button"
+            android:text="Create Room"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/btn_fast_join"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="150dp"
+            android:background="@drawable/shape_login_button"
+
+            android:text="Fast Join"
+            app:backgroundTint="@null" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_createRoomPanel"
+        android:layout_width="350dp"
+        android:layout_height="390dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/shape_login_panel"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <TextView
+            android:id="@+id/tv_mazeName"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:hint="Maze Type"
+            android:textSize="24sp" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/cb_noob"/>
+
+        <ImageView
+            android:id="@+id/img_maze_noob"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/maze_noob" />
+
+        <EditText
+            android:id="@+id/et_password_create"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/btn_create"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:background="@drawable/shape_login_button"
+            android:text="Create"
+            app:backgroundTint="@null"
+            android:layout_gravity="center_horizontal"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_joinRoomPanel"
+        android:layout_width="350dp"
+        android:layout_height="390dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/shape_login_panel"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <EditText
+            android:id="@+id/et_roomId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Room ID" />
+
+        <EditText
+            android:id="@+id/et_password_join"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/btn_join"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:background="@drawable/shape_login_button"
+            android:text="Join"
+            app:backgroundTint="@null"
+            android:layout_gravity="center_horizontal"/>
+    </LinearLayout>
+
+
+
+</RelativeLayout>

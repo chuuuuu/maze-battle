@@ -1,0 +1,9 @@
+mutation CreateRoom($mapname: MAZENAME!, $password: String!, $roomname: String!){
+    createRoom(mapname: $mapname, password: $password, roomname: $roomname){
+        errors
+        room{
+            id
+        }
+    }
+
+}

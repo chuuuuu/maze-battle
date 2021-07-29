@@ -1,0 +1,8 @@
+mutation JoinRoom($password: String!, $roomid: Float!){
+    joinRoom(password: $password, roomid: $roomid){
+        errors
+        room{
+            id
+        }
+    }
+}
