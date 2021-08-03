@@ -8,8 +8,8 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
 import { createServer } from "http";
-import { SubscriptionServer } from "subscriptions-transport-ws";
-import { execute, subscribe } from "graphql";
+// import { SubscriptionServer } from "subscriptions-transport-ws";
+// import { execute, subscribe } from "graphql";
 import { UserResolver } from "./resolvers/user";
 import { MyContext } from "./types";
 import { RoomResolver } from "./resolvers/room";
@@ -17,9 +17,9 @@ import { NumberResolver } from "./resolvers/number";
 import { createConnection } from "typeorm";
 import connectRedis from "connect-redis";
 import Redis from "ioredis";
-import { Room } from "./maze/Room";
 import { User } from "./entities/User";
 import { GameResolver } from "./resolvers/game";
+import WebSocket from 'ws';
 
 const main = async () => {
   // database setup
@@ -27,7 +27,7 @@ const main = async () => {
     type: "postgres",
     url: process.env.DATABASE_URL,
     logging: true,
-    entities: [User, Room],
+    entities: [User],
     // with this, you dont need to run migration (sort of create table stuff)
     synchronize: true,
   });
@@ -67,7 +67,7 @@ const main = async () => {
   });
   app.use(sessionMiddleware);
 
-  const httpServer = createServer(app);
+  const server = createServer(app);
   const schema = await buildSchema({
     resolvers: [
       HelloResolver,
@@ -89,49 +89,62 @@ const main = async () => {
     cors: false,
   });
 
-  SubscriptionServer.create(
-    {
-      // This is the `schema` we just created.
-      schema,
-      // These are imported from `graphql`.
-      execute,
-      subscribe,
-      // https://stackoverflow.com/questions/52280481/graphql-subscription-websocket-nodejs-express-session
-      onConnect: (_params: any, _ws: any, ctx: any) => {
-        console.log("connect");
-        return new Promise((resolve, _reject) => {
-          const req = ctx.request as express.Request;
-          const res = {} as any as express.Response;
+  const wss = new WebSocket.Server({ server });
+  wss.on("connection", function connection(ws) {
+    ws.on("message", function incoming(message) {
+      console.log("received: %s", message);
+    });
 
-          sessionMiddleware(req, res, (_: any) => {
-            resolve({ req });
-          });
-        });
-      },
-      onDisconnect: (_webSocket: any, ctx: any)=>{
-        console.log("disconnect");
-        return new Promise((resolve, _reject) => {
-          const req = ctx.request as express.Request;
-          const res = {} as any as express.Response;
+    ws.send("something");
+  });
 
-          sessionMiddleware(req, res, (_: any) => {
-            resolve({ req });
-          });
-        });
-
-      }
-    },
-    {
-      // This is the `httpServer` we created in a previous step.
-      server: httpServer,
-      // This `server` is the instance returned from `new ApolloServer`.
-      path: apolloServer.graphqlPath,
-    }
-  );
-
-  httpServer.listen(process.env.PORT, () => {
+  server.listen(process.env.PORT, () => {
     console.log(`server started on port ${process.env.PORT}`);
   });
+
+  // SubscriptionServer.create(
+  //   {
+  //     // This is the `schema` we just created.
+  //     schema,
+  //     // These are imported from `graphql`.
+  //     execute,
+  //     subscribe,
+  //     // https://stackoverflow.com/questions/52280481/graphql-subscription-websocket-nodejs-express-session
+  //     onConnect: (_params: any, _ws: any, ctx: any) => {
+  //       console.log("connect");
+  //       return new Promise((resolve, _reject) => {
+  //         const req = ctx.request as express.Request;
+  //         const res = {} as any as express.Response;
+
+  //         sessionMiddleware(req, res, (_: any) => {
+  //           resolve({ req });
+  //         });
+  //       });
+  //     },
+  //     onDisconnect: (_webSocket: any, ctx: any)=>{
+  //       console.log("disconnect");
+  //       return new Promise((resolve, _reject) => {
+  //         const req = ctx.request as express.Request;
+  //         const res = {} as any as express.Response;
+
+  //         sessionMiddleware(req, res, (_: any) => {
+  //           resolve({ req });
+  //         });
+  //       });
+
+  //     }
+  //   },
+  //   {
+  //     // This is the `httpServer` we created in a previous step.
+  //     server: httpServer,
+  //     // This `server` is the instance returned from `new ApolloServer`.
+  //     path: apolloServer.graphqlPath,
+  //   }
+  // );
+
+  // httpServer.listen(process.env.PORT, () => {
+  //   console.log(`server started on port ${process.env.PORT}`);
+  // });
 };
 
 main().catch((err) => {
