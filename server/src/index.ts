@@ -21,6 +21,7 @@ import { User } from "./entities/User";
 import { GameResolver } from "./resolvers/game";
 import WebSocket from "ws";
 import { Socket } from "node:net";
+import {} from "protobufjs";
 
 const main = async () => {
   // database setup
@@ -116,17 +117,32 @@ const main = async () => {
     const userId = reqAfterSessionMiddleware.session.userId;
 
     if (!userId) {
-      wss.handleUpgrade(reqAfterSessionMiddleware, socket, head, function (ws) {
+      wss.handleUpgrade(reqAfterSessionMiddleware, socket, head, (ws) => {
         ws.send("please login first");
         ws.close();
       });
       return;
     }
 
-    wss.handleUpgrade(reqAfterSessionMiddleware, socket, head, function (ws) {
-      ws.on("message", function incoming(message) {
-        const data = JSON.parse(message.toString());
-        console.log(data);
+    wss.handleUpgrade(reqAfterSessionMiddleware, socket, head, (ws) => {
+      ws.on("message", (message) => {
+        let data;
+        try {
+          data = JSON.parse(message.toString());
+        } catch (e) {
+          ws.send("data should be json string");
+          return;
+        }
+
+        if(!data.event){
+          ws.send("data should contain event");
+          return;
+        }
+
+        if(!data.body){
+          ws.send("data should contain body");
+          return;
+        }
       });
     });
   });

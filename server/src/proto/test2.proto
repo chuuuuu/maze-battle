@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message Change2 {
+    Kind2 kind = 1;
+    string patch = 2;
+    repeated string tags = 3; 
+    oneof name_or_id {
+        string name = 4;
+        string id = 5;
+    }
+}
+
+enum Kind2 {
+  UPDATED = 0;
+  DELETED = 1;
+}

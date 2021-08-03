@@ -8,8 +8,11 @@ const main = async () => {
   });
 
   const data = {
-    hello: "world",
-    123: 456,
+    event: "123",
+    body: {
+      hello: "world",
+      123: 456,
+    },
   };
   ws.send(JSON.stringify(data));
   ws.send(JSON.stringify(data));
