@@ -1,5 +1,5 @@
-import { Graph } from "./Graph";
-import { shuffle } from "../utils/shuffle";
+import { Graph, Node } from "./Graph";
+import { randomChoose, shuffle } from "../utils/shuffle";
 import Sampler from "poisson-disk-sampling";
 import { Delaunay, Voronoi } from "d3-delaunay";
 import {
@@ -60,35 +60,35 @@ class DelaunayMaze implements Maze {
     this.mazeMap = new Graph();
     for (let i = 0; i < numPoint; i++) {
       this.mazeMap.createNode(
-        { x: pdPoints[i][0], y: pdPoints[i][1] },
-        polygons[i]
+        { x: pdPoints[i]![0]!, y: pdPoints[i]![1]! },
+        polygons[i]!
       );
     }
 
     this.mazeMap.compile();
 
     const seen: Seen = new Set<number>();
-    const start: number = this.mazeMap.nodes[0].id;
+    const start: number = this.mazeMap.nodes[0]!.id;
 
     this.buildRoad(seen, start, delaunayMazeConfig.minWallLen);
   }
 
-  buildRoad(seen: Seen, current_nodeid: number, minWallLen: number) {
-    seen.add(current_nodeid);
-    const nodeids = shuffle(this.mazeMap.getNeighbours(current_nodeid));
+  buildRoad(seen: Seen, current_nodeId: number, minWallLen: number) {
+    seen.add(current_nodeId);
+    const nodeids = shuffle(this.mazeMap.getNeighbours(current_nodeId));
 
-    nodeids.forEach((next_nodeid) => {
-      if (seen.has(next_nodeid)) {
+    nodeids.forEach((next_nodeId) => {
+      if (seen.has(next_nodeId)) {
         return;
       }
       if (
-        this.mazeMap.getWallLength(current_nodeid, next_nodeid) < minWallLen
+        this.mazeMap.getWallLength(current_nodeId, next_nodeId) < minWallLen
       ) {
         return;
       }
 
-      this.mazeMap.setTunnel(current_nodeid, next_nodeid);
-      this.buildRoad(seen, next_nodeid, minWallLen);
+      this.mazeMap.setTunnel(current_nodeId, next_nodeId);
+      this.buildRoad(seen, next_nodeId, minWallLen);
     });
   }
 }
@@ -112,7 +112,7 @@ registerEnumType(MAZENAME, {
   description: "list of mazename",
 });
 
-export class MazeFactory {
+export class MazeManager {
   static createMaze(mazename: MAZENAME): Maze {
     switch (mazename) {
       case MAZENAME.NOOB:
@@ -121,5 +121,9 @@ export class MazeFactory {
       default:
         return new DelaunayMaze(NoobMazeConfig);
     }
+  }
+
+  static getRandomNode(maze: Maze): Node{
+    return randomChoose(maze.mazeMap.nodes);
   }
 }

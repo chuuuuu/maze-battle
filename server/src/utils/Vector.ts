@@ -42,7 +42,7 @@ export class VectorKey extends Vector implements Key<Vector> {
   }
 
   static fromPoint(point: Delaunay.Point): VectorKey {
-    return new VectorKey(point[0], point[1]);
+    return new VectorKey(point[0]!, point[1]!);
   }
 
   hash(maximum: number): number {

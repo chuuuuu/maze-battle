@@ -1,47 +1,43 @@
-// import { Game } from "../maze/Game";
-import { Room } from "../maze/Room";
-import { Role, ROLENAME } from "../maze/Role";
-// import { Player } from "../maze/Player";
-import { Field, ObjectType } from "type-graphql";
-import { Vector } from "../utils/Vector";
-import { Effect } from "../maze/Effect";
-import { Node } from "../maze/Graph";
+import { ROLENAME } from "../maze/Role";
+import { Field, Int, ObjectType } from "type-graphql";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 @ObjectType()
-export class User {
-  private static users: User[] = [];
-  static createUser(username: string) {
-    const id = this.users.length;
-    const user: User = { id, username, rolename: ROLENAME.NOOB };
-    this.users.push(user);
-    return user;
-  }
-
-  static find(id: number) {
-    return this.users[id];
-  }
-
-  @Field()
+@Entity()
+export class User extends BaseEntity {
+  // basic info
+  @Field(() => Int)
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Field()
+  @Column({ unique: true })
   username: string;
 
-  @Field()
+  @Column()
+  password: string;
+
+  @Field(() => String)
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Field(() => String)
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  // game info
+  @Field(() => ROLENAME)
+  @Column({
+    type: "enum",
+    enum: ROLENAME,
+    default: ROLENAME.NOOB,
+  })
   rolename: ROLENAME;
-
-  @Field({ nullable: true })
-  room?: Room;
-
-  @Field({ nullable: true })
-  role?: Role;
-
-  @Field({ nullable: true })
-  node?: Node;
-
-  @Field({ nullable: true })
-  position?: Vector;
-
-  @Field(() => [Effect], { nullable: true })
-  effects?: Effect[];
 }

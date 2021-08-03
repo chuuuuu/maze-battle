@@ -36,7 +36,7 @@ export class KeyValueList<S, T> {
 
   find(key: Key<S>): T | null {
     for (let i = 0; i < this.keyValuePairList.length; i++) {
-      const pair = this.keyValuePairList[i];
+      const pair = this.keyValuePairList[i]!;
       if (key.equal(pair.key)) {
         return pair.value;
       }
@@ -47,7 +47,7 @@ export class KeyValueList<S, T> {
 
   insert(pair: KeyValuePair<S, T>): void {
     for (let i = 0; i < this.keyValuePairList.length; i++) {
-      if (pair.key.equal(this.keyValuePairList[i].key)) {
+      if (pair.key.equal(this.keyValuePairList[i]!.key)) {
         this.keyValuePairList[i] = pair;
         return;
       }
@@ -83,7 +83,7 @@ export class HashTable<S, T> {
 
   find(key: Key<S>): T | null {
     const hash = key.hash(this.table.length);
-    const kvList = this.table[hash];
+    const kvList = this.table[hash]!;
     return kvList.find(key);
   }
 
@@ -93,7 +93,7 @@ export class HashTable<S, T> {
     }
 
     const hash = pair.key.hash(this.table.length);
-    const kvList = this.table[hash];
+    const kvList = this.table[hash]!;
     kvList.insert(pair);
 
     this.numKeyValuePair++;
@@ -129,7 +129,7 @@ export class HashTable<S, T> {
       const kvPairs = kvList.getKVPairs();
       kvPairs.forEach((pair) => {
         const hash = pair.key.hash(this.table.length);
-        const kvList = this.table[hash];
+        const kvList = this.table[hash]!;
         kvList.insert(pair);
       });
     });

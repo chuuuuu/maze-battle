@@ -23,7 +23,7 @@ registerEnumType(ROLENAME, {
   description: "list of rolename",
 });
 
-export class RoleFactory {
+export class RoleManager {
   static createRole(rolename: ROLENAME): Role {
     switch (rolename) {
       case ROLENAME.NOOB:
