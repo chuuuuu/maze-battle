@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+// https://stackoverflow.com/questions/30564404/how-to-determine-message-type-in-protobuf-so-that-i-can-use-that-type-parsefrom
+message WSResponse {
+  WS_RESPONSE_EVENT event = 1;
+  oneof body {
+    OpponentBody opponentBody = 2;
+    GameBody gameBody = 3;
+  }
+}
+
+message OpponentBody{
+  WS_RESPONSE_EVENT event = 1;
+  string a = 2;
+  string b = 3;
+}
+
+message GameBody{
+  WS_RESPONSE_EVENT event = 1;
+  string a = 2;
+  string b = 3;
+}
+
+enum WS_RESPONSE_EVENT {
+  OPPONENT = 0;
+  GAME = 1;
+}

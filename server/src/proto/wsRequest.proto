@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+message WSRequest {
+  WS_REQUEST_EVENT event = 1;
+  oneof body {
+    QuickStartBody quickStartBody = 2;
+    ActionBody actionBody = 3;
+  }   
+}
+
+message QuickStartBody{
+  WS_REQUEST_EVENT event = 1;
+  string a = 2;
+  string b = 3;
+}
+
+message ActionBody{
+  WS_REQUEST_EVENT event = 1;
+  string a = 2;
+  string b = 3;
+}
+
+enum WS_REQUEST_EVENT {
+  QUICK_START = 0;
+  ACTION = 1;
+}

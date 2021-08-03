@@ -8,8 +8,6 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
 import { createServer } from "http";
-// import { SubscriptionServer } from "subscriptions-transport-ws";
-// import { execute, subscribe } from "graphql";
 import { UserResolver } from "./resolvers/user";
 import { MyContext, MyRequest } from "./types";
 import { RoomResolver } from "./resolvers/room";
@@ -21,6 +19,8 @@ import { User } from "./entities/User";
 import { GameResolver } from "./resolvers/game";
 import WebSocket from "ws";
 import { Socket } from "node:net";
+import { WSRequest } from "./generated/wsRequest_pb";
+import { wsRequestHandler } from "./utils/wsRequestHandler";
 
 const main = async () => {
   // database setup
@@ -124,24 +124,16 @@ const main = async () => {
     }
 
     wss.handleUpgrade(reqAfterSessionMiddleware, socket, head, (ws) => {
-      ws.on("message", (message) => {
-        let data;
+      ws.on("message", (buffer: Uint8Array) => {
+        let wsRequest: WSRequest;
         try {
-          data = JSON.parse(message.toString());
+          wsRequest = WSRequest.deserializeBinary(buffer);
         } catch (e) {
-          ws.send("data should be json string");
+          ws.send("data should be protocol buffer");
           return;
         }
 
-        if (!data.event) {
-          ws.send("data should contain event");
-          return;
-        }
-
-        if (!data.body) {
-          ws.send("data should contain body");
-          return;
-        }
+        wsRequestHandler(wsRequest);
       });
     });
   });
