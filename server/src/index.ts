@@ -11,7 +11,7 @@ import { createServer } from "http";
 // import { SubscriptionServer } from "subscriptions-transport-ws";
 // import { execute, subscribe } from "graphql";
 import { UserResolver } from "./resolvers/user";
-import { MyContext } from "./types";
+import { MyContext, MyRequest } from "./types";
 import { RoomResolver } from "./resolvers/room";
 import { NumberResolver } from "./resolvers/number";
 import { createConnection } from "typeorm";
@@ -19,7 +19,8 @@ import connectRedis from "connect-redis";
 import Redis from "ioredis";
 import { User } from "./entities/User";
 import { GameResolver } from "./resolvers/game";
-import WebSocket from 'ws';
+import WebSocket from "ws";
+import { Socket } from "node:net";
 
 const main = async () => {
   // database setup
@@ -34,6 +35,14 @@ const main = async () => {
 
   // server setup
   const app = express();
+
+  // websocket
+  app.set("view engine", "ejs");
+  app.set("views", "src/views");
+  app.use(express.static("src/public"));
+  app.get("/websocket", (_req, res) => {
+    res.render("websocket");
+  });
 
   // redis setup
   const RedisStore = connectRedis(session);
@@ -68,6 +77,7 @@ const main = async () => {
   app.use(sessionMiddleware);
 
   const server = createServer(app);
+
   const schema = await buildSchema({
     resolvers: [
       HelloResolver,
@@ -89,13 +99,36 @@ const main = async () => {
     cors: false,
   });
 
-  const wss = new WebSocket.Server({ server });
-  wss.on("connection", function connection(ws) {
-    ws.on("message", function incoming(message) {
-      console.log("received: %s", message);
-    });
+  const wss = new WebSocket.Server({
+    noServer: true,
+  });
 
-    ws.send("something");
+  server.on("upgrade", async (req: MyRequest, socket: Socket, head: Buffer) => {
+    const reqAfterSessionMiddleware = await new Promise<MyRequest>(
+      (resolve, _reject) => {
+        const res = {} as any as express.Response;
+        sessionMiddleware(req, res, (_: any) => {
+          resolve(req);
+        });
+      }
+    );
+
+    const userId = reqAfterSessionMiddleware.session.userId;
+
+    if (!userId) {
+      wss.handleUpgrade(reqAfterSessionMiddleware, socket, head, function (ws) {
+        ws.send("please login first");
+        ws.close();
+      });
+      return;
+    }
+
+    wss.handleUpgrade(reqAfterSessionMiddleware, socket, head, function (ws) {
+      ws.on("message", function incoming(message) {
+        const data = JSON.parse(message.toString());
+        console.log(data);
+      });
+    });
   });
 
   server.listen(process.env.PORT, () => {
