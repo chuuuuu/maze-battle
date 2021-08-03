@@ -21,7 +21,6 @@ import { User } from "./entities/User";
 import { GameResolver } from "./resolvers/game";
 import WebSocket from "ws";
 import { Socket } from "node:net";
-import {} from "protobufjs";
 
 const main = async () => {
   // database setup
@@ -134,12 +133,12 @@ const main = async () => {
           return;
         }
 
-        if(!data.event){
+        if (!data.event) {
           ws.send("data should contain event");
           return;
         }
 
-        if(!data.body){
+        if (!data.body) {
           ws.send("data should contain body");
           return;
         }
